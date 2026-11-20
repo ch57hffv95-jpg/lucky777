@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LUCKY 777 BIZ PRO — v3.9.4 雙業務管理系統</title>
+  <title>LUCKY 777 BIZ PRO — v3.9.5 雙業務管理系統</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -127,7 +127,7 @@
           <span class="font-mono text-lg font-black text-emerald-400">777</span>
         </div>
         <h1 class="mt-4 text-xl font-black tracking-tight text-white">LUCKY 777 BIZ PRO</h1>
-        <p class="mt-1 text-xs font-medium text-slate-400">v3.9.4 雙業務管理系統 · 內部專用登入</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">v3.9.5 雙業務管理系統 · 內部專用登入</p>
       </div>
 
       <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="mt-6 space-y-4">
@@ -354,7 +354,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2">
               <h1 class="text-base font-black tracking-tight text-white sm:text-lg">LUCKY 777 BIZ PRO</h1>
-              <span class="rounded-md border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-purple-300">v3.9.4 雙業務管理系統</span>
+              <span class="rounded-md border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-purple-300">v3.9.5 雙業務管理系統 · IndexedDB</span>
             </div>
             <p class="text-[11px] text-slate-400">香港 Pokémon TCG · Trading 散卡買賣 × 福袋 POOL 全流程經營系統</p>
           </div>
@@ -590,22 +590,28 @@
             <label for="intakeNumber" class="mb-1.5 block text-xs font-semibold text-slate-300">卡牌編號</label>
             <input id="intakeNumber" type="text" placeholder="例如：227/S-P、057/072" class="v-input w-full px-3.5 py-2.5 font-mono text-sm font-bold placeholder-slate-500" />
           </div>
-          <div class="md:col-span-3">
-            <label for="intakeGrade" class="mb-1.5 block text-xs font-semibold text-slate-300">評級</label>
-            <select id="intakeGrade" class="v-input w-full px-3.5 py-2.5 text-sm font-bold">
-              <option value="PSA 10">PSA 10</option>
-              <option value="PSA 9">PSA 9</option>
-              <option value="BGS 9.5">BGS 9.5</option>
-              <option value="裸卡">裸卡</option>
-              <option value="其他">其他</option>
-            </select>
+          <div class="grid grid-cols-2 gap-2.5 md:col-span-3">
+            <div>
+              <label for="intakeGrade" class="mb-1.5 block text-xs font-semibold text-slate-300">評級</label>
+              <select id="intakeGrade" class="v-input w-full px-2.5 py-2.5 text-sm font-bold">
+                <option value="PSA 10">PSA 10</option>
+                <option value="PSA 9">PSA 9</option>
+                <option value="BGS 9.5">BGS 9.5</option>
+                <option value="裸卡">裸卡</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div>
+              <label for="intakeQty" class="mb-1.5 block text-xs font-semibold text-gold-400">入庫數量</label>
+              <input id="intakeQty" type="number" min="1" step="1" value="1" class="v-input-gold num w-full px-2.5 py-2.5 text-center font-mono text-sm font-black" title="同一款卡入庫數量，新增後每張獨立顯示" />
+            </div>
           </div>
           <div class="md:col-span-3">
-            <label for="intakeCost" class="mb-1.5 block text-xs font-semibold text-emerald-400">買入成本 (HK$)</label>
+            <label for="intakeCost" class="mb-1.5 block text-xs font-semibold text-emerald-400">每張買入成本 (HK$)</label>
             <input id="intakeCost" type="number" min="0" step="any" placeholder="0" class="v-input-emerald num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-emerald-500/40" />
           </div>
           <div class="md:col-span-3">
-            <label for="intakeMarket" class="mb-1.5 block text-xs font-semibold text-purple-400">當下市價 (HK$)</label>
+            <label for="intakeMarket" class="mb-1.5 block text-xs font-semibold text-purple-400">每張當下市價 (HK$)</label>
             <input id="intakeMarket" type="number" min="0" step="any" placeholder="0" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-purple-400/40" />
           </div>
 
@@ -624,7 +630,7 @@
                 <div id="intakeImgPlaceholder" class="flex h-14 w-11 shrink-0 items-center justify-center rounded-lg border border-borderline bg-cardbg text-lg">🖼️</div>
                 <div>
                   <div class="text-xs font-bold text-slate-200">點擊上傳、拖放圖片，或直接按 <span class="font-mono text-emerald-400">⌘V / Ctrl+V</span> 貼上截圖</div>
-                  <div class="mt-0.5 text-[11px] text-slate-500">自動壓縮為輕量縮圖儲存在本機</div>
+                  <div class="mt-0.5 text-[11px] text-slate-500">雙重智能壓圖（長邊上限 640px · ~50KB WebP/JPEG）× IndexedDB 超大容量儲存</div>
                 </div>
               </div>
               <button type="button" id="intakeClearImgBtn" onclick="event.stopPropagation(); clearTempImage('intake')" class="hidden shrink-0 rounded-lg border border-borderline bg-white/5 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 hover:text-rose-400">清除</button>
@@ -1094,10 +1100,15 @@
     // =========================================================================
     // 1. 全域常數與系統狀態
     // =========================================================================
-    const STORAGE_KEY = 'lucky777_biz_v394';
-    const LEGACY_STORAGE_KEY = 'lucky777_biz_v393';
+    const DB_NAME = 'Lucky777BizProDB';
+    const DB_VERSION = 1;
+    const DB_STORE_NAME = 'app_state';
+    const DB_RECORD_KEY = 'lucky777_biz_v395_main';
+    const STORAGE_KEY = 'lucky777_biz_v395';
+    const LEGACY_STORAGE_KEYS = ['lucky777_biz_v394', 'lucky777_biz_v393'];
     const AUTH_STORAGE_KEY = 'lucky777_biz_v394_auth';
     const SESSION_AUTH_KEY = 'lucky777_auth';
+    let idbInstance = null;
 
     const PRIZE_TIERS = ['SP賞', 'A賞', 'B賞', 'C賞', 'Last賞', '保底'];
     const PICKER_GRADES = ['全部', 'PSA 10', 'PSA 9', 'BGS 9.5', '裸卡', '其他'];
@@ -1218,157 +1229,122 @@
     // 3. 香港 PTCG 示範數據與無縫載入（含 v3.9.3 自動遷移）
     // =========================================================================
     function buildDemoState() {
+      return {"venues": [{"id": "v-c8", "name": "石門潮格 C8", "fixedRent": 1542, "cycleMonths": 3}, {"id": "v-c9", "name": "石門潮格 C9", "fixedRent": 1542, "cycleMonths": 3}, {"id": "v-tw", "name": "大圍 THE ONE CONCEPT", "fixedRent": 500, "cycleMonths": 1}, {"id": "v-1795193781111", "name": "大圍THE ONE CONCEPT (B)", "fixedRent": 500, "cycleMonths": 1}], "cards": [{"id": "card-1795195579769", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195498399", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195462451", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195452213", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195415523", "number": "230/193", "grade": "PSA 10", "cost": 344, "marketPrice": 344, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 344）"}]}, {"id": "card-1795195340712", "number": "212/172", "grade": "PSA 10", "cost": 1000, "marketPrice": 1301, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 1,000）"}]}, {"id": "card-1795195249891", "number": "085/069", "grade": "PSA 10", "cost": 4000, "marketPrice": 5047, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 4,000）"}]}, {"id": "card-1795195198910", "number": "074/067", "grade": "PSA 10", "cost": 5400, "marketPrice": 7118, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 5,400）"}]}], "trades": [], "pools": [{"id": "pool-1795195600001", "location": "石門潮格 C8", "name": "第 1 期福袋池", "totalDraws": 100, "promoDraws": 30, "promoPrice": 88, "regularDraws": 70, "regularPrice": 108, "soldDraws": 25, "arUnitPrice": 10, "arCount": 5, "storeCommEnabled": false, "storeCommPct": 5, "staffCommEnabled": true, "staffName": "員工", "staffCommPct": 5, "staffCommPaid": false, "status": "active", "createdAt": "2026-11-20", "completedAt": "", "entries": []}], "ledger": [{"id": "led-1795195579769", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195579769"}, {"id": "led-1795195498399", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195498399"}, {"id": "led-1795195462451", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195462451"}, {"id": "led-1795195452213", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195452213"}, {"id": "led-1795195415523", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：230/193 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 344, "refId": "card-1795195415523"}, {"id": "led-1795195340712", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：212/172 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 1000, "refId": "card-1795195340712"}, {"id": "led-1795195249891", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：085/069 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 4000, "refId": "card-1795195249891"}, {"id": "led-1795195198910", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：074/067 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 5400, "refId": "card-1795195198910"}]};
+    }
+
+    // =========================================================================
+    // 3B. IndexedDB 超大容量資料庫引擎（自動無縫遷移舊版 localStorage 資料）
+    // =========================================================================
+    function openIndexedDB() {
+      if (idbInstance) return Promise.resolve(idbInstance);
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error('瀏覽器不支援 IndexedDB'));
+          return;
+        }
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(DB_STORE_NAME)) {
+            db.createObjectStore(DB_STORE_NAME);
+          }
+        };
+        req.onsuccess = (e) => {
+          idbInstance = e.target.result;
+          resolve(idbInstance);
+        };
+        req.onerror = () => reject(req.error || new Error('IndexedDB 開啟失敗'));
+      });
+    }
+
+    async function idbGetState() {
+      const db = await openIndexedDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE_NAME, 'readonly');
+        const store = tx.objectStore(DB_STORE_NAME);
+        const req = store.get(DB_RECORD_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function idbSetState(data) {
+      const db = await openIndexedDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(DB_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(DB_STORE_NAME);
+        const req = store.put(data, DB_RECORD_KEY);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    function normalizeParsedState(parsed) {
+      const demo = buildDemoState();
       return {
-        venues: [
-          { id: 'v-c8', name: '石門潮格 C8', fixedRent: 2800, cycleMonths: 1 },
-          { id: 'v-c9', name: '石門潮格 C9', fixedRent: 2800, cycleMonths: 1 },
-          { id: 'v-tw', name: '大圍 THE ONE CONCEPT', fixedRent: 7500, cycleMonths: 3 }
-        ],
-        cards: [
-          {
-            id: 'card-057', number: '057/072', grade: 'PSA 10', cost: 3200, marketPrice: 4300,
-            image: '', notes: '閃光烈空坐 SM3+ · 門市收卡', status: '在庫中',
-            poolId: null, poolLocation: '', poolName: '', poolTier: '',
-            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-10',
-            history: [{ date: '2026-11-10', text: '➕ 入庫登記（買入成本 HK$3,200）' }]
-          },
-          {
-            id: 'card-227', number: '227/S-P', grade: 'PSA 10', cost: 2920, marketPrice: 3650,
-            image: '', notes: '見返り美人皮卡丘 · 日版', status: '在庫中',
-            poolId: null, poolLocation: '', poolName: '', poolTier: '',
-            soldPrice: 0, takenPoolLabel: '', buybackCount: 1, createdAt: '2026-11-05',
-            history: [
-              { date: '2026-11-05', text: '➕ 入庫登記（買入成本 HK$2,900）' },
-              { date: '2026-11-12', text: '♻️ 客人回卡（HK$2,920）from 大圍 THE ONE CONCEPT · 第 11 期伊貝池，重返在庫中' }
-            ]
-          },
-          {
-            id: 'card-151', number: '151/165', grade: '裸卡', cost: 680, marketPrice: 920,
-            image: '', notes: '151 夢幻ex SAR 裸卡靚品', status: '在庫中',
-            poolId: null, poolLocation: '', poolName: '', poolTier: '',
-            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-14',
-            history: [{ date: '2026-11-14', text: '➕ 入庫登記（買入成本 HK$680）' }]
-          },
-          {
-            id: 'card-205', number: '205/165', grade: 'PSA 10', cost: 1650, marketPrice: 2200,
-            image: '', notes: '151 噴火龍ex SAR · 日版', status: '已放 POOL',
-            poolId: 'pool-c8-ongoing', poolLocation: '石門潮格 C8', poolName: '第 12 期 777 狂歡福袋池', poolTier: 'SP賞',
-            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-11',
-            history: [
-              { date: '2026-11-11', text: '➕ 入庫登記（買入成本 HK$1,650）' },
-              { date: '2026-11-15', text: '🎰 放入 POOL：石門潮格 C8 · 第 12 期 777 狂歡福袋池 (SP賞)' }
-            ]
-          },
-          {
-            id: 'card-196', number: '196/196', grade: 'PSA 10', cost: 1950, marketPrice: 2650,
-            image: '', notes: '莉莉艾全力 SR · 日版', status: 'Trading 售出',
-            poolId: null, poolLocation: '', poolName: '', poolTier: '',
-            soldPrice: 2700, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-08',
-            history: [
-              { date: '2026-11-08', text: '➕ 入庫登記（買入成本 HK$1,950）' },
-              { date: '2026-11-17', text: '💰 Trading 售出 HK$2,700（Carousell 面交 · 淨利 +HK$750）' }
-            ]
-          },
-          {
-            id: 'card-099', number: '099/071', grade: 'PSA 9', cost: 1200, marketPrice: 1550,
-            image: '', notes: '奇樹 SAR · 日版', status: 'POOL 客領取',
-            poolId: null, poolLocation: '', poolName: '', poolTier: '',
-            soldPrice: 0, takenPoolLabel: '大圍 THE ONE CONCEPT · 第 11 期伊貝池', buybackCount: 0, createdAt: '2026-11-04',
-            history: [
-              { date: '2026-11-04', text: '➕ 入庫登記（買入成本 HK$1,200）' },
-              { date: '2026-11-13', text: '📦 客人領取：大圍 THE ONE CONCEPT · 第 11 期伊貝池' }
-            ]
-          }
-        ],
-        trades: [
-          {
-            id: 'trade-d1', date: '2026-11-17', type: 'sale',
-            outCardId: 'card-196', outCardNumber: '196/196', outCardGrade: 'PSA 10', outCardCost: 1950,
-            salePrice: 2700, buyerNote: 'Carousell 旺角交收',
-            inCardId: null, inCardNumber: '', inCardGrade: '', inCardMarket: 0,
-            cashDiff: 0, profit: 750
-          }
-        ],
-        pools: [
-          {
-            id: 'pool-c8-ongoing', location: '石門潮格 C8', name: '第 12 期 777 狂歡福袋池',
-            totalDraws: 100, promoDraws: 30, promoPrice: 88, regularDraws: 70, regularPrice: 108,
-            soldDraws: 45, arUnitPrice: 10, arCount: 12,
-            storeCommEnabled: true, storeCommPct: 5,
-            staffCommEnabled: true, staffName: '阿明', staffCommPct: 5,
-            staffCommPaid: false,
-            status: 'active', createdAt: '2026-11-15', completedAt: '',
-            entries: [
-              {
-                entryId: 'ent-d1', cardId: 'card-205', tier: 'SP賞',
-                cardNumber: '205/165', cardGrade: 'PSA 10', cardCost: 1650, cardMarketPrice: 2200,
-                cardImage: '', status: '尚在 POOL 內', buybackPrice: 0, resolvedAt: ''
-              }
-            ]
-          },
-          {
-            id: 'pool-tw-done', location: '大圍 THE ONE CONCEPT', name: '第 11 期伊貝池',
-            totalDraws: 80, promoDraws: 20, promoPrice: 88, regularDraws: 60, regularPrice: 108,
-            soldDraws: 80, arUnitPrice: 10, arCount: 25,
-            storeCommEnabled: false, storeCommPct: 5,
-            staffCommEnabled: true, staffName: '阿明', staffCommPct: 8,
-            staffCommPaid: false,
-            status: 'completed', createdAt: '2026-11-08', completedAt: '2026-11-13',
-            entries: [
-              {
-                entryId: 'ent-d2', cardId: 'card-099', tier: 'SP賞',
-                cardNumber: '099/071', cardGrade: 'PSA 9', cardCost: 1200, cardMarketPrice: 1550,
-                cardImage: '', status: '客人領取', buybackPrice: 0, resolvedAt: '2026-11-13'
-              },
-              {
-                entryId: 'ent-d3', cardId: 'card-227', tier: 'A賞',
-                cardNumber: '227/S-P', cardGrade: 'PSA 10', cardCost: 2900, cardMarketPrice: 3650,
-                cardImage: '', status: '客人回卡', buybackPrice: 2920, resolvedAt: '2026-11-12'
-              }
-            ]
-          }
-        ],
-        ledger: [
-          { id: 'led-1', date: '2026-11-17', source: 'trade', title: '散卡出售：196/196 (PSA 10)', sub: 'Carousell 旺角交收', flowType: 'income', amount: 2700, refId: 'trade-d1' },
-          { id: 'led-2', date: '2026-11-14', source: 'inventory', title: '買入入庫：151/165 (裸卡)', sub: '151 夢幻ex SAR 裸卡靚品', flowType: 'expense', amount: 680, refId: 'card-151' },
-          { id: 'led-3', date: '2026-11-13', source: 'pool', title: 'POOL 埋數營業額：大圍 THE ONE CONCEPT · 第 11 期伊貝池', sub: '售出 80/80 抽', flowType: 'income', amount: 8240, refId: 'pool-tw-done' },
-          { id: 'led-4', date: '2026-11-13', source: 'pool', title: 'POOL 員工佣金 (阿明 8%)：大圍 THE ONE CONCEPT', sub: '第 11 期伊貝池', flowType: 'expense', amount: 659, refId: 'pool-tw-done' },
-          { id: 'led-5', date: '2026-11-13', source: 'pool', title: 'POOL 客回卡支出：大圍 THE ONE CONCEPT · 第 11 期伊貝池', sub: '共回收 1 張獎品卡', flowType: 'expense', amount: 2920, refId: 'pool-tw-done' },
-          { id: 'led-6', date: '2026-11-13', source: 'pool', title: 'POOL AR 回收支出：大圍 THE ONE CONCEPT · 第 11 期伊貝池', sub: '25 張 × HK$ 10', flowType: 'expense', amount: 250, refId: 'pool-tw-done' },
-          { id: 'led-7', date: '2026-11-01', source: 'pool', title: '場地固定租金：石門潮格 C8 (1個月)', sub: '月均 HK$ 2,800', flowType: 'expense', amount: 2800, refId: 'rent-v-c8' }
-        ]
+        venues: Array.isArray(parsed.venues) && parsed.venues.length ? parsed.venues : demo.venues,
+        cards: Array.isArray(parsed.cards) ? parsed.cards : [],
+        trades: Array.isArray(parsed.trades) ? parsed.trades : [],
+        pools: Array.isArray(parsed.pools) ? parsed.pools.map(p => ({ ...p, staffCommPaid: Boolean(p.staffCommPaid) })) : [],
+        ledger: Array.isArray(parsed.ledger) ? parsed.ledger : []
       };
     }
 
-    function loadState() {
+    async function loadState() {
+      let migratedFromLegacy = false;
       try {
-        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && Array.isArray(parsed.cards) && Array.isArray(parsed.pools) && Array.isArray(parsed.venues)) {
-            state = {
-              venues: parsed.venues.length ? parsed.venues : buildDemoState().venues,
-              cards: parsed.cards,
-              trades: Array.isArray(parsed.trades) ? parsed.trades : [],
-              pools: parsed.pools.map(p => ({ ...p, staffCommPaid: Boolean(p.staffCommPaid) })),
-              ledger: Array.isArray(parsed.ledger) ? parsed.ledger : []
-            };
+        const idbData = await idbGetState();
+        if (idbData && Array.isArray(idbData.cards) && Array.isArray(idbData.pools) && Array.isArray(idbData.venues)) {
+          const isOldDemo = idbData.cards.some(c => c && c.id === 'card-057') && idbData.pools.some(p => p && p.id === 'pool-c8-ongoing');
+          if (!isOldDemo) {
+            state = normalizeParsedState(idbData);
             createPoolVenueName = state.venues[0]?.name || '';
-            saveState();
             return;
           }
         }
       } catch (_) {}
+
+      // 若 IndexedDB 尚未有紀錄，檢查舊版 localStorage 並自動無縫遷移
+      try {
+        let raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          for (const k of LEGACY_STORAGE_KEYS) {
+            const legacyRaw = localStorage.getItem(k);
+            if (legacyRaw) {
+              raw = legacyRaw;
+              migratedFromLegacy = true;
+              break;
+            }
+          }
+        }
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.cards) && Array.isArray(parsed.pools) && Array.isArray(parsed.venues)) {
+            state = normalizeParsedState(parsed);
+            createPoolVenueName = state.venues[0]?.name || '';
+            await saveState();
+            if (migratedFromLegacy) {
+              setTimeout(() => showToast('🚀 已自動將舊版資料無縫升級至 IndexedDB 超大容量資料庫！', 'success'), 450);
+            }
+            return;
+          }
+        }
+      } catch (_) {}
+
       state = buildDemoState();
       createPoolVenueName = state.venues[0]?.name || '';
-      saveState();
+      await saveState();
     }
 
-    function saveState() {
+    async function saveState() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        await idbSetState(state);
       } catch (_) {
-        showToast('⚠️ 本機儲存空間接近上限，請先匯出 JSON 備份', 'error');
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (__) {
+          showToast('⚠️ 資料庫寫入異常，請先匯出 JSON 備份', 'error');
+        }
       }
     }
 
@@ -1453,9 +1429,26 @@
     }
 
     // =========================================================================
-    // 5. 圖片壓縮上傳（Canvas 380px JPEG）、拖放與全域 ⌘V / Ctrl+V
+    // 5. 雙重智能壓圖引擎（長邊上限 640px ＋ 雙格式 WebP/JPEG 智能壓縮至 ~50KB）
     // =========================================================================
-    function compressImage(blob, maxWidth = 380, quality = 0.78) {
+    function detectBestImageMime() {
+      try {
+        const testCanvas = document.createElement('canvas');
+        testCanvas.width = 4;
+        testCanvas.height = 4;
+        const dataUrl = testCanvas.toDataURL('image/webp', 0.8);
+        if (dataUrl && dataUrl.startsWith('data:image/webp')) return 'image/webp';
+      } catch (_) {}
+      return 'image/jpeg';
+    }
+
+    function estimateDataUrlBytes(dataUrl) {
+      const idx = dataUrl.indexOf(',');
+      const b64 = idx >= 0 ? dataUrl.slice(idx + 1) : dataUrl;
+      return Math.round((b64.length * 3) / 4);
+    }
+
+    function compressImage(blob, maxLongEdge = 640, targetBytes = 52000) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => reject(new Error('讀取圖片失敗'));
@@ -1465,14 +1458,55 @@
           img.onload = () => {
             let w = img.naturalWidth || img.width;
             let h = img.naturalHeight || img.height;
-            if (w > maxWidth) { h = Math.round((h * maxWidth) / w); w = maxWidth; }
+            const longEdge = Math.max(w, h);
+            if (longEdge > maxLongEdge) {
+              const scale = maxLongEdge / longEdge;
+              w = Math.max(1, Math.round(w * scale));
+              h = Math.max(1, Math.round(h * scale));
+            }
+
             const canvas = document.createElement('canvas');
-            canvas.width = w; canvas.height = h;
+            canvas.width = w;
+            canvas.height = h;
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#09090f';
             ctx.fillRect(0, 0, w, h);
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+
+            const primaryMime = detectBestImageMime();
+            let quality = primaryMime === 'image/webp' ? 0.82 : 0.78;
+            let bestUrl = canvas.toDataURL(primaryMime, quality);
+            let bestBytes = estimateDataUrlBytes(bestUrl);
+
+            while (bestBytes > targetBytes && quality > 0.36) {
+              quality = Math.max(0.36, Number((quality - 0.08).toFixed(2)));
+              const candidate = canvas.toDataURL(primaryMime, quality);
+              const candidateBytes = estimateDataUrlBytes(candidate);
+              if (candidateBytes < bestBytes) {
+                bestUrl = candidate;
+                bestBytes = candidateBytes;
+              } else {
+                break;
+              }
+            }
+
+            if (bestBytes > targetBytes * 1.25 && Math.max(w, h) > 480) {
+              const scale2 = 480 / Math.max(w, h);
+              canvas.width = Math.max(1, Math.round(w * scale2));
+              canvas.height = Math.max(1, Math.round(h * scale2));
+              const ctx2 = canvas.getContext('2d');
+              ctx2.fillStyle = '#09090f';
+              ctx2.fillRect(0, 0, canvas.width, canvas.height);
+              ctx2.drawImage(img, 0, 0, canvas.width, canvas.height);
+              bestUrl = canvas.toDataURL(primaryMime, 0.72);
+              bestBytes = estimateDataUrlBytes(bestUrl);
+            }
+
+            const kb = Math.max(1, Math.round(bestBytes / 1024));
+            const fmtLabel = primaryMime === 'image/webp' ? 'WebP' : 'JPEG';
+            resolve({ dataUrl: bestUrl, kb, format: fmtLabel, width: canvas.width, height: canvas.height });
           };
           img.src = reader.result;
         };
@@ -1482,9 +1516,10 @@
 
     async function processImageBlob(target, blob) {
       try {
-        tempImages[target] = await compressImage(blob);
+        const res = await compressImage(blob);
+        tempImages[target] = res.dataUrl;
         syncImagePreview(target);
-        showToast('🖼️ 卡圖已壓縮載入', 'success');
+        showToast(`🖼️ 雙重智能壓圖完成（${res.width}×${res.height} · ${res.format} 約 ${res.kb}KB）`, 'success');
       } catch (e) {
         showToast(`⚠️ 圖片載入失敗：${e.message}`, 'error');
       }
@@ -1850,7 +1885,6 @@
       const unpaidBadge = document.getElementById('staffTotalUnpaidBadge');
       if (!container) return;
 
-      // 依員工名稱分組，但嚴格逐個 POOL 獨立計算（該 POOL 實際抽獎流水 × 該期員工佣金 %）
       const staffMap = new Map();
       let grandTotalUnpaid = 0;
 
@@ -1871,7 +1905,7 @@
         }
 
         const rec = staffMap.get(nameKey);
-        const commAmt = m.staffCommCost; // 已按單一 POOL 流水 × 該 POOL 百分比計算
+        const commAmt = m.staffCommCost;
         const isCompleted = pool.status === 'completed';
 
         if (isCompleted) rec.settledTotal += commAmt;
@@ -1946,7 +1980,6 @@
 
         return `
           <div class="rounded-2xl border border-borderline bg-obsidian p-4 sm:p-5">
-            <!-- 員工個人總結頂欄 -->
             <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-3.5 lg:flex-row lg:items-center">
               <div class="flex items-center gap-3">
                 <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-sm font-black text-emerald-300">
@@ -1963,7 +1996,6 @@
                 </div>
               </div>
 
-              <!-- 3 個獨立計算匯總數字 -->
               <div class="num grid grid-cols-3 gap-2.5 font-mono text-xs">
                 <div class="rounded-xl border border-purple-500/30 bg-cardbg px-3 py-2">
                   <div class="text-[10px] text-purple-300">已完結埋數應出</div>
@@ -1980,7 +2012,6 @@
               </div>
             </div>
 
-            <!-- 逐個 POOL 明細拆解表 -->
             <div class="mt-3 overflow-x-auto">
               <table class="w-full min-w-[640px] border-collapse text-left">
                 <thead>
@@ -2119,36 +2150,55 @@
     function clearIntakeForm() {
       ['intakeNumber', 'intakeCost', 'intakeMarket', 'intakeNotes'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('intakeGrade').value = 'PSA 10';
+      const qtyEl = document.getElementById('intakeQty');
+      if (qtyEl) qtyEl.value = '1';
       clearTempImage('intake');
     }
 
     function registerNewCard() {
       const number = document.getElementById('intakeNumber').value.trim();
       const grade = document.getElementById('intakeGrade').value;
+      const qty = Math.max(1, Math.min(200, Math.round(Number(document.getElementById('intakeQty')?.value || 1))));
       const cost = Math.max(0, Number(document.getElementById('intakeCost').value || 0));
       const marketPrice = Math.max(0, Number(document.getElementById('intakeMarket').value || 0));
       const notes = document.getElementById('intakeNotes').value.trim();
       if (!number) { showToast('請輸入卡牌編號', 'warn'); return; }
 
-      const cardId = `card-${Date.now()}`;
-      state.cards.unshift({
-        id: cardId, number, grade, cost, marketPrice,
-        image: tempImages.intake || '', notes, status: '在庫中',
-        poolId: null, poolLocation: '', poolName: '', poolTier: '',
-        soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: todayISO(),
-        history: [{ date: todayISO(), text: `➕ 入庫登記（買入成本 ${fmtHKD(cost)}${notes ? ' · ' + notes : ''}）` }]
-      });
+      const baseTs = Date.now();
+      const batchRefId = `batch-${baseTs}`;
+      const sharedImage = tempImages.intake || '';
+      const createdIds = [];
 
-      if (cost > 0) {
+      for (let i = 0; i < qty; i++) {
+        const cardId = `card-${baseTs}-${i + 1}-${Math.random().toString(36).slice(2, 5)}`;
+        createdIds.push(cardId);
+        const batchNote = qty > 1 ? `${notes ? notes + ' · ' : ''}批次入庫 (${i + 1}/${qty})` : notes;
+        state.cards.unshift({
+          id: cardId, number, grade, cost, marketPrice,
+          image: sharedImage, notes: batchNote, status: '在庫中',
+          poolId: null, poolLocation: '', poolName: '', poolTier: '',
+          soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: todayISO(),
+          history: [{ date: todayISO(), text: `➕ 入庫登記（買入成本 ${fmtHKD(cost)}${qty > 1 ? ` · 第 ${i + 1}/${qty} 張` : ''}${notes ? ' · ' + notes : ''}）` }]
+        });
+      }
+
+      const totalBatchCost = cost * qty;
+      if (totalBatchCost > 0) {
         state.ledger.unshift({
-          id: `led-${Date.now()}`, date: todayISO(), source: 'inventory',
-          title: `買入入庫：${number} (${grade})`, sub: notes || '卡牌資產庫入庫',
-          flowType: 'expense', amount: cost, refId: cardId
+          id: `led-${baseTs}`, date: todayISO(), source: 'inventory',
+          title: qty > 1 ? `買入入庫：${number} (${grade}) × ${qty} 張` : `買入入庫：${number} (${grade})`,
+          sub: qty > 1 ? `單價 ${fmtHKD(cost)} × ${qty} 張${notes ? ' · ' + notes : ''}` : (notes || '卡牌資產庫入庫'),
+          flowType: 'expense', amount: totalBatchCost, refId: qty === 1 ? createdIds[0] : batchRefId
         });
       }
 
       saveState(); clearIntakeForm(); renderAll();
-      showToast(`✅ 「${number}」已登記入庫並記入流水！`, 'success');
+      showToast(
+        qty > 1
+          ? `✅ 已新增 ${qty} 張獨立「${number}」入庫並記入總成本 ${fmtHKD(totalBatchCost)}！`
+          : `✅ 「${number}」已登記入庫並記入流水！`,
+        'success'
+      );
     }
 
     function setInvFilter(f) { invFilter = f; renderInventory(); }
@@ -2956,7 +3006,6 @@
                 </div>
               </div>
 
-              <!-- 抽數進度控制 -->
               <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-borderline bg-obsidian p-3.5">
                 <div class="num flex flex-wrap items-center gap-2 text-xs">
                   <span class="font-bold text-white">已售：<strong class="font-mono text-sm text-emerald-400">${m.soldDraws} / ${m.totalDraws} 抽</strong></span>
@@ -2974,7 +3023,6 @@
                 ` : ''}
               </div>
 
-              <!-- 佣金即時微調 & 實時財務結算欄 -->
               <div class="space-y-3 rounded-xl border border-borderline bg-obsidian p-4">
                 ${isActive ? `
                   <div class="flex flex-wrap items-center gap-4 border-b border-borderline pb-3 text-xs">
@@ -3017,7 +3065,6 @@
               </div>
 
               ${isActive ? `
-                <!-- 獎品卡追蹤與回收管理 -->
                 <div class="rounded-xl border border-borderline bg-obsidian p-4">
                   <div class="flex flex-wrap items-center justify-between gap-2 pb-3">
                     <div class="text-xs font-extrabold text-white">🎴 獎品卡追蹤與回收管理（共 ${m.entries.length} 張 · 原價 ${fmtHKD(m.totalPutInCost)}）</div>
@@ -3040,7 +3087,6 @@
                   </div>
                 </div>
 
-                <!-- 🃏 AR 卡回收專區 -->
                 <div class="flex flex-col justify-between gap-3 rounded-xl border border-gold-500/35 bg-gold-500/[0.06] p-3.5 md:flex-row md:items-center">
                   <div class="flex flex-wrap items-center gap-3 text-xs">
                     <span class="font-black text-gold-400">🃏 AR 卡回收專區</span>
@@ -3059,7 +3105,6 @@
                   <div class="num font-mono text-xs font-black text-gold-400">AR 回收總支出：${fmtHKD(m.arTotalCost)}</div>
                 </div>
               ` : `
-                <!-- 已完結埋數結算報告 -->
                 <div class="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
                   <div class="rounded-xl border border-rose-500/25 bg-obsidian p-3.5">
                     <div class="mb-2 text-xs font-extrabold text-rose-400">📦 客人領取（失去卡牌 · ${m.takenEntries.length} 張）</div>
@@ -3075,7 +3120,6 @@
           `;
         }
 
-        // 收合摘要列
         return `
           <div class="panel p-4 transition-all ${isExpanded ? 'border-purple-500/50 shadow-lg shadow-purple-500/10' : 'hover:border-purple-500/35'}">
             <div onclick="togglePoolExpand('${pool.id}')" class="flex cursor-pointer flex-col justify-between gap-3 lg:flex-row lg:items-center">
@@ -3374,7 +3418,7 @@
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `LUCKY777_v3_9_4_備份_${todayISO()}.json`;
+      a.href = url; a.download = `LUCKY777_v3_9_5_備份_${todayISO()}.json`;
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
       showToast('💾 已匯出完整備份 JSON', 'success');
     }
@@ -3413,10 +3457,10 @@
     // =========================================================================
     // 16. 頁面啟動初始化
     // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('manualDate').value = todayISO();
       getAuthCredentials();
-      loadState();
+      await loadState();
       syncPoolStatusFilterUI();
       switchTab('dashboard');
       checkSessionLogin();
