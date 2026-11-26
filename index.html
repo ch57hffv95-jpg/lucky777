@@ -1242,36 +1242,119 @@
       } catch (_) {}
     }
 
-    async function loadStateAsync() {
-      cleanupLegacyStorage();
-      const db = await openIndexedDB();
-      const idbData = await readFromIndexedDB(db);
+    const CLOUD_DRIVE_API_URL = 'https://script.google.com/macros/s/AKfycbwoK7iIR5bJ537Mzv7ZqE0vKkFcwzpq4JPy986pPw25q-T9JjwtX2boh_IoWd6CAEB7/exec';
+let _cloudSaveTimer = null;
 
+function buildCloudSnapshot() {
+  const src = (typeof state === 'object' && state) ? state : {};
+  return {
+    version: 'v3.9.6',
+    savedAt: new Date().toISOString(),
+    venues: Array.isArray(src.venues) ? src.venues : [],
+    cards: Array.isArray(src.cards) ? src.cards : [],
+    trades: Array.isArray(src.trades) ? src.trades : [],
+    pools: Array.isArray(src.pools) ? src.pools : [],
+    ledger: Array.isArray(src.ledger) ? src.ledger : []
+  };
+}
+
+async function fetchCloudState() {
+  const res = await fetch(CLOUD_DRIVE_API_URL, { method: 'GET', cache: 'no-store' });
+  if (!res.ok) throw new Error('雲端讀取失敗：HTTP ' + res.status);
+  const text = await res.text();
+  const parsed = JSON.parse(text);
+  if (parsed && parsed.ok === false) {
+    throw new Error('雲端腳本錯誤：' + (parsed.error || '未知錯誤'));
+  }
+  return parsed;
+}
+
+async function pushCloudStateNow() {
+  const payload = JSON.stringify(buildCloudSnapshot());
+  const res = await fetch(CLOUD_DRIVE_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: payload
+  });
+  if (!res.ok) throw new Error('雲端寫入失敗：HTTP ' + res.status);
+  const text = await res.text();
+  let result = null;
+  try { result = JSON.parse(text); } catch (_) {}
+  if (result && result.ok === false) {
+    throw new Error('雲端寫入錯誤：' + (result.error || '未知錯誤'));
+  }
+  return true;
+}
+
+function scheduleCloudSave() {
+  if (_cloudSaveTimer) clearTimeout(_cloudSaveTimer);
+  _cloudSaveTimer = setTimeout(() => {
+    pushCloudStateNow().catch(err => console.warn('Google 雲端同步失敗：', err));
+  }, 800);
+}
+
+async function loadStateAsync() {
+  let loadedLocal = false;
+  try {
+    if (typeof openIndexedDB === 'function' && typeof readFromIndexedDB === 'function') {
+      const db = idbInstance || await openIndexedDB();
+      const idbData = await readFromIndexedDB(db);
       if (idbData && typeof idbData === 'object' && Array.isArray(idbData.cards) && Array.isArray(idbData.pools)) {
         state = normalizeStateObj(idbData);
-      } else {
-        // 首次載入或無 IndexedDB 紀錄時，直接使用你內嵌的備份數據，絕不跳返舊測試數
-        state = normalizeStateObj(JSON.parse(JSON.stringify(EMBEDDED_USER_BACKUP)));
+        loadedLocal = true;
       }
-
-      createPoolVenueName = state.venues[0]?.name || '';
-      await saveState();
     }
+  } catch (err) {
+    console.warn('讀取本機 IndexedDB 失敗：', err);
+  }
 
-    async function saveState() {
-      const snapshot = JSON.parse(JSON.stringify(state));
+  try {
+    const cloudData = await fetchCloudState();
+    if (cloudData && typeof cloudData === 'object' && Array.isArray(cloudData.cards) && Array.isArray(cloudData.pools)) {
+      state = normalizeStateObj(cloudData);
+      if (typeof createPoolVenueName !== 'undefined') {
+        createPoolVenueName = state.venues[0]?.name || '';
+      }
+      if (typeof openIndexedDB === 'function' && typeof writeToIndexedDB === 'function') {
+        try {
+          const db = idbInstance || await openIndexedDB();
+          await writeToIndexedDB(db, buildCloudSnapshot());
+        } catch (_) {}
+      }
+      if (typeof renderAll === 'function') renderAll();
+      return true;
+    }
+  } catch (err) {
+    console.warn('從 Google 雲端硬碟載入失敗，沿用本機資料：', err);
+  }
+
+  if (!loadedLocal && typeof EMBEDDED_USER_BACKUP !== 'undefined') {
+    state = normalizeStateObj(JSON.parse(JSON.stringify(EMBEDDED_USER_BACKUP)));
+  }
+  if (typeof createPoolVenueName !== 'undefined' && Array.isArray(state?.venues)) {
+    createPoolVenueName = state.venues[0]?.name || '';
+  }
+  if (typeof renderAll === 'function') renderAll();
+  return loadedLocal;
+}
+
+async function saveState() {
+  const snapshot = buildCloudSnapshot();
+  let idbOk = false;
+
+  try {
+    if (typeof openIndexedDB === 'function' && typeof writeToIndexedDB === 'function') {
       const db = idbInstance || await openIndexedDB();
-      const idbOk = await writeToIndexedDB(db, snapshot);
-
-      // 同步寫入 localStorage 作為即時備援（若因體積超出 5MB 寫入失敗，IndexedDB 仍然已保存）
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-      } catch (_) {
-        if (!idbOk) {
-          showToast('⚠️ 儲存空間不足，請先匯出 JSON 備份', 'error');
-        }
-      }
+      idbOk = await writeToIndexedDB(db, snapshot);
     }
+  } catch (err) {
+    console.warn('IndexedDB 寫入失敗：', err);
+  }
+
+  scheduleCloudSave();
+  return Boolean(idbOk || CLOUD_DRIVE_API_URL);
+}
+
 
     // =========================================================================
     // 4. 共用工具函式與彈窗控制
