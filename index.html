@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LUCKY 777 BIZ PRO — v3.9.5 雙業務管理系統</title>
+  <title>LUCKY 777 BIZ PRO — v3.9.6 雙業務管理系統</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -127,7 +127,7 @@
           <span class="font-mono text-lg font-black text-emerald-400">777</span>
         </div>
         <h1 class="mt-4 text-xl font-black tracking-tight text-white">LUCKY 777 BIZ PRO</h1>
-        <p class="mt-1 text-xs font-medium text-slate-400">v3.9.5 雙業務管理系統 · 內部專用登入</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">v3.9.6 雙業務管理系統 · 內部專用登入</p>
       </div>
 
       <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="mt-6 space-y-4">
@@ -354,7 +354,7 @@
           <div>
             <div class="flex flex-wrap items-center gap-2">
               <h1 class="text-base font-black tracking-tight text-white sm:text-lg">LUCKY 777 BIZ PRO</h1>
-              <span class="rounded-md border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-purple-300">v3.9.5 雙業務管理系統 · IndexedDB</span>
+              <span class="rounded-md border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-purple-300">v3.9.6 雙業務管理系統 · IndexedDB</span>
             </div>
             <p class="text-[11px] text-slate-400">香港 Pokémon TCG · Trading 散卡買賣 × 福袋 POOL 全流程經營系統</p>
           </div>
@@ -411,6 +411,73 @@
           <div class="text-xs font-semibold text-slate-400">總在庫資產估算市值 (HK$)</div>
           <div id="kpiStockMarket" class="num mt-1.5 font-mono text-2xl font-black text-purple-400">HK$ 0</div>
           <div id="kpiStockCount" class="num mt-1 font-mono text-[11px] text-slate-400">總成本 HK$ 0 · 0 張在庫</div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- NEW FEATURE (v3.9.6)：💵 公司可用現金流監控（分離數期未到賬資金）      -->
+      <!-- ================================================================= -->
+      <div class="panel border-emerald-500/35 bg-gradient-to-br from-emerald-500/[0.06] via-cardbg to-gold-500/[0.04] p-5 sm:p-6">
+        <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-base font-extrabold text-white">💵 公司實時可用現金流監控（收卡營運資金池）</h2>
+              <span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-emerald-300">自動扣除數期未過數</span>
+            </div>
+            <p class="mt-0.5 text-xs text-slate-400">已扣除入庫收卡、客回卡及已付支出；需要 7–14 日數期過數的場地（如大圍）會先列入「待到賬」，確認過數後才計入可用現金。</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 rounded-xl border border-borderline bg-obsidian px-3.5 py-2 text-xs">
+            <span class="font-bold text-slate-300">💰 初始營運本金 (HK$)：</span>
+            <input id="openingCashInput" type="number" step="any" value="0" onchange="updateOpeningCash(this.value)" class="v-input-emerald num w-28 px-2.5 py-1 text-right font-mono text-xs font-black" title="輸入你最初投放的營運現金本金，系統會自動加減所有收卡與已到賬收入" />
+          </div>
+        </div>
+
+        <!-- 3 格現金流核心卡片 -->
+        <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <!-- 格 1：現在公司可用現金 -->
+          <div class="rounded-2xl border-2 border-emerald-500/50 bg-obsidian p-5 shadow-lg shadow-emerald-500/10">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-emerald-400">💵 現在公司可用現金 (可即時收卡)</span>
+              <span class="rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">已到賬實錢</span>
+            </div>
+            <div id="cashAvailableNow" class="num mt-2 font-mono text-3xl font-black text-emerald-400">HK$ 0</div>
+            <div id="cashAvailableBreakdown" class="num mt-2 space-y-0.5 font-mono text-[11px] text-slate-400">
+              <div>已到賬現金流入 HK$ 0 − 實際現金支出 HK$ 0</div>
+            </div>
+          </div>
+
+          <!-- 格 2：福袋數期未到賬 -->
+          <div class="rounded-2xl border border-gold-500/45 bg-obsidian p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-gold-400">⏳ 格仔舖數期未到賬 (待過數)</span>
+              <span class="rounded bg-gold-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-gold-300">7–14日數期</span>
+            </div>
+            <div id="cashPendingPool" class="num mt-2 font-mono text-3xl font-black text-gold-400">HK$ 0</div>
+            <div id="cashPendingSub" class="num mt-2 font-mono text-[11px] text-slate-400">
+              來自 0 個待過數 POOL（未計入上方可用現金）
+            </div>
+          </div>
+
+          <!-- 格 3：總營運資金（可用 ＋ 待到賬） -->
+          <div class="rounded-2xl border border-purple-500/35 bg-obsidian p-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-purple-300">🏦 總資金池（可用 ＋ 數期尾數）</span>
+              <span class="rounded bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">全盤現金視圖</span>
+            </div>
+            <div id="cashTotalCombined" class="num mt-2 font-mono text-3xl font-black text-white">HK$ 0</div>
+            <div id="cashImmediatePoolSub" class="num mt-2 font-mono text-[11px] text-slate-400">
+              ⚡ 即日找數場地已入賬流水：HK$ 0
+            </div>
+          </div>
+        </div>
+
+        <!-- 各 POOL 過數狀態快速核對列 -->
+        <div class="mt-4 rounded-xl border border-borderline bg-obsidian/80 p-3.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-extrabold text-slate-200">🧾 各福袋 POOL 場地過數狀態（點選切換「已過數到賬」即撥入可用現金）</span>
+            <span class="text-[11px] text-slate-400">預設：石門潮格＝即日找數｜大圍＝7–14日數期</span>
+          </div>
+          <div id="poolCashSettlementList" class="mt-2.5 grid grid-cols-1 gap-2 md:grid-cols-2"></div>
         </div>
       </div>
 
@@ -513,7 +580,7 @@
       </div>
 
       <!-- ================================================================= -->
-      <!-- NEW FEATURE：👤 員工佣金待結算彙總表（逐個 POOL 獨立核算＋出糧追蹤）  -->
+      <!-- 👤 員工佣金待結算彙總表（逐個 POOL 獨立核算＋出糧追蹤）              -->
       <!-- ================================================================= -->
       <div id="staffCommissionSection" class="panel p-5 sm:p-6">
         <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
@@ -576,13 +643,13 @@
     </section>
 
     <!-- =================================================================== -->
-    <!-- 分頁 2：🎴 卡牌資產庫（嚴格只保留 6 個入庫欄位）                      -->
+    <!-- 分頁 2：🎴 卡牌資產庫                                                 -->
     <!-- =================================================================== -->
     <section id="view-inventory" class="hidden space-y-6">
       <div class="panel p-5 sm:p-6">
         <div class="border-b border-borderline pb-3.5">
           <h2 class="text-base font-extrabold text-white">➕ 購入新卡入庫登記</h2>
-          <p class="mt-0.5 text-xs text-slate-400">Trading 與福袋 POOL 共用卡牌源頭，入庫自動記入交易流水（買入支出）。</p>
+          <p class="mt-0.5 text-xs text-slate-400">Trading 與福袋 POOL 共用卡牌源頭，入庫自動記入交易流水（買入支出）並從公司可用現金扣除。</p>
         </div>
 
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
@@ -669,7 +736,7 @@
     <!-- =================================================================== -->
     <section id="view-pools" class="space-y-5">
 
-      <!-- A. 🏢 場地與固定租金管理（預設收合，省位清爽） -->
+      <!-- A. 🏢 場地與固定租金管理（含結算數期設定） -->
       <div class="panel p-4">
         <div onclick="toggleVenueDrawer()" class="flex cursor-pointer flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-2.5">
@@ -686,12 +753,12 @@
           <div id="venueListContainer" class="space-y-2.5"></div>
 
           <div class="rounded-xl border border-purple-500/30 bg-obsidian p-3.5">
-            <div class="mb-2.5 text-xs font-extrabold text-purple-300">+ 新增場地與固定租金</div>
+            <div class="mb-2.5 text-xs font-extrabold text-purple-300">+ 新增場地與固定租金 / 數期設定</div>
             <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-12">
-              <div class="sm:col-span-4">
+              <div class="sm:col-span-3">
                 <input id="newVenueName" type="text" placeholder="場地名稱（如：旺角兆萬 B12）" class="v-input w-full px-3 py-2 text-xs font-bold" />
               </div>
-              <div class="sm:col-span-3">
+              <div class="sm:col-span-2">
                 <input id="newVenueRent" type="number" min="0" step="any" placeholder="固定租金 (HK$)" class="v-input-emerald num w-full px-3 py-2 font-mono text-xs font-bold" />
               </div>
               <div class="sm:col-span-2">
@@ -707,6 +774,12 @@
                 <input id="newVenueCustomMonths" type="number" min="1" value="2" class="v-input-purple num w-full px-2 py-2 text-center font-mono text-xs font-bold" title="自訂月數" />
               </div>
               <div class="sm:col-span-2">
+                <select id="newVenueSettlementType" class="v-input-gold w-full px-2.5 py-2 text-xs font-bold">
+                  <option value="instant">⚡ 即日找數</option>
+                  <option value="delayed">⏳ 數期 7–14 日過數</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
                 <button type="button" onclick="addVenueFromDrawer()" class="w-full rounded-xl bg-purple-600 px-3 py-2 text-xs font-black text-white hover:bg-purple-500">+ 新增場地</button>
               </div>
             </div>
@@ -714,7 +787,7 @@
         </div>
       </div>
 
-      <!-- B. ✨ 開立新福袋 POOL（預設展開！完整 4 大區塊靜態呈現，收合不清空資料） -->
+      <!-- B. ✨ 開立新福袋 POOL -->
       <div class="panel p-5 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-4">
           <div>
@@ -853,7 +926,7 @@
         </div>
       </div>
 
-      <!-- C. POOL 追蹤清單篩選列（順序：🟢 進行中 → 🏁 已完結埋數 → 全部狀態） -->
+      <!-- C. POOL 追蹤清單篩選列 -->
       <div class="flex flex-col justify-between gap-3 rounded-2xl border border-borderline bg-cardbg p-3.5 lg:flex-row lg:items-center">
         <div class="flex flex-wrap items-center gap-1.5">
           <button type="button" id="poolSfActive" onclick="setPoolStatusFilter('active')" class="rounded-xl bg-emerald-500 px-3.5 py-1.5 text-xs font-black text-obsidian transition">🟢 進行中</button>
@@ -1028,7 +1101,7 @@
 
       <!-- 手動雜項收支表單 -->
       <div class="panel p-5 sm:p-6">
-        <h3 class="text-sm font-extrabold text-white">✍️ 新增手動雜項收支（格仔舖租金 / 評級費 / 卡套耗材）</h3>
+        <h3 class="text-sm font-extrabold text-white">✍️ 新增手動雜項收支（格仔舖租金 / 評級費 / 卡套耗材 / 注入資金）</h3>
         <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-12">
           <div class="sm:col-span-2">
             <label class="mb-1 block text-[10px] text-slate-400">日期</label>
@@ -1047,6 +1120,7 @@
               <option value="格仔舖租金">格仔舖租金</option>
               <option value="評級費">評級費</option>
               <option value="卡套耗材">卡套耗材</option>
+              <option value="注入營運現金">注入營運現金</option>
               <option value="其他收支">其他收支</option>
             </select>
           </div>
@@ -1104,8 +1178,8 @@
     const DB_VERSION = 1;
     const DB_STORE_NAME = 'app_state';
     const DB_RECORD_KEY = 'lucky777_biz_v395_main';
-    const STORAGE_KEY = 'lucky777_biz_v395';
-    const LEGACY_STORAGE_KEYS = ['lucky777_biz_v394', 'lucky777_biz_v393'];
+    const STORAGE_KEY = 'lucky777_biz_v396';
+    const LEGACY_STORAGE_KEYS = ['lucky777_biz_v395', 'lucky777_biz_v394', 'lucky777_biz_v393'];
     const AUTH_STORAGE_KEY = 'lucky777_biz_v394_auth';
     const SESSION_AUTH_KEY = 'lucky777_auth';
     let idbInstance = null;
@@ -1114,6 +1188,7 @@
     const PICKER_GRADES = ['全部', 'PSA 10', 'PSA 9', 'BGS 9.5', '裸卡', '其他'];
 
     let state = {
+      openingCash: 0,
       venues: [],
       cards: [],
       trades: [],
@@ -1121,31 +1196,24 @@
       ledger: []
     };
 
-    let activeTab = 'pools'; // 預設開啟「🎰 福袋 POOL 管理」
+    let activeTab = 'pools';
     let invFilter = 'ALL';
     let tradeMode = 'sale';
 
-    // 抽屜與開池表單開合狀態
     let venueDrawerOpen = false;
-    let createPoolOpen = true; // ✨ 開立新福袋 POOL 預設展開
+    let createPoolOpen = true;
 
-    // 開池表單狀態
     let createPoolVenueName = '';
     let createPoolGradeFilter = '全部';
-    let createPoolSelected = new Map(); // cardId -> tier
+    let createPoolSelected = new Map();
 
-    // POOL 列表篩選（預設進行中）
     let poolStatusFilter = 'active';
     let poolVenueFilter = 'ALL';
     let ledgerFilter = 'ALL';
 
-    // 已展開的 POOL ID（預設空 Set = 全部收合）
     const expandedPoolIds = new Set();
-
-    // 暫存圖片
     const tempImages = { intake: '', edit: '' };
 
-    // 彈窗追蹤變數
     let editingCardId = null;
     let quickPutCardId = null;
     let addMorePoolId = null;
@@ -1226,15 +1294,43 @@
     }
 
     // =========================================================================
-    // 3. 香港 PTCG 示範數據與無縫載入（含 v3.9.3 自動遷移）
+    // 3. 預設場地與無縫資料載入（100% 保留現有 IndexedDB 與 localStorage 資料）
     // =========================================================================
-    function buildDemoState() {
-      return {"venues": [{"id": "v-c8", "name": "石門潮格 C8", "fixedRent": 1542, "cycleMonths": 3}, {"id": "v-c9", "name": "石門潮格 C9", "fixedRent": 1542, "cycleMonths": 3}, {"id": "v-tw", "name": "大圍 THE ONE CONCEPT", "fixedRent": 500, "cycleMonths": 1}, {"id": "v-1795193781111", "name": "大圍THE ONE CONCEPT (B)", "fixedRent": 500, "cycleMonths": 1}], "cards": [{"id": "card-1795195579769", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195498399", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195462451", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195452213", "number": "AR SLAB", "grade": "其他", "cost": 160, "marketPrice": 160, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 160）"}]}, {"id": "card-1795195415523", "number": "230/193", "grade": "PSA 10", "cost": 344, "marketPrice": 344, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 344）"}]}, {"id": "card-1795195340712", "number": "212/172", "grade": "PSA 10", "cost": 1000, "marketPrice": 1301, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 1,000）"}]}, {"id": "card-1795195249891", "number": "085/069", "grade": "PSA 10", "cost": 4000, "marketPrice": 5047, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 4,000）"}]}, {"id": "card-1795195198910", "number": "074/067", "grade": "PSA 10", "cost": 5400, "marketPrice": 7118, "image": "", "notes": "", "status": "在庫中", "poolId": null, "poolLocation": "", "poolName": "", "poolTier": "", "soldPrice": 0, "takenPoolLabel": "", "buybackCount": 0, "createdAt": "2026-11-20", "history": [{"date": "2026-11-20", "text": "➕ 入庫登記（買入成本 HK$ 5,400）"}]}], "trades": [], "pools": [{"id": "pool-1795195600001", "location": "石門潮格 C8", "name": "第 1 期福袋池", "totalDraws": 100, "promoDraws": 30, "promoPrice": 88, "regularDraws": 70, "regularPrice": 108, "soldDraws": 25, "arUnitPrice": 10, "arCount": 5, "storeCommEnabled": false, "storeCommPct": 5, "staffCommEnabled": true, "staffName": "員工", "staffCommPct": 5, "staffCommPaid": false, "status": "active", "createdAt": "2026-11-20", "completedAt": "", "entries": []}], "ledger": [{"id": "led-1795195579769", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195579769"}, {"id": "led-1795195498399", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195498399"}, {"id": "led-1795195462451", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195462451"}, {"id": "led-1795195452213", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：AR SLAB (其他)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 160, "refId": "card-1795195452213"}, {"id": "led-1795195415523", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：230/193 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 344, "refId": "card-1795195415523"}, {"id": "led-1795195340712", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：212/172 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 1000, "refId": "card-1795195340712"}, {"id": "led-1795195249891", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：085/069 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 4000, "refId": "card-1795195249891"}, {"id": "led-1795195198910", "date": "2026-11-20", "source": "inventory", "title": "買入入庫：074/067 (PSA 10)", "sub": "卡牌資產庫入庫", "flowType": "expense", "amount": 5400, "refId": "card-1795195198910"}]};
+    function inferVenueSettlementType(name) {
+      const n = String(name || '');
+      if (n.includes('大圍') || n.toUpperCase().includes('THE ONE')) return 'delayed';
+      return 'instant';
     }
 
-    // =========================================================================
-    // 3B. IndexedDB 超大容量資料庫引擎（自動無縫遷移舊版 localStorage 資料）
-    // =========================================================================
+    function isVenueDelayed(locationName) {
+      const v = state.venues.find(x => x.name === locationName);
+      if (v && (v.settlementType === 'instant' || v.settlementType === 'delayed')) {
+        return v.settlementType === 'delayed';
+      }
+      return inferVenueSettlementType(locationName) === 'delayed';
+    }
+
+    function isPoolCashReceived(pool) {
+      if (typeof pool.cashReceived === 'boolean') return pool.cashReceived;
+      return !isVenueDelayed(pool.location);
+    }
+
+    function buildDemoState() {
+      return {
+        openingCash: 0,
+        venues: [
+          { id: 'v-c8', name: '石門潮格 C8', fixedRent: 1542, cycleMonths: 3, settlementType: 'instant' },
+          { id: 'v-c9', name: '石門潮格 C9', fixedRent: 1542, cycleMonths: 3, settlementType: 'instant' },
+          { id: 'v-tw', name: '大圍 THE ONE CONCEPT', fixedRent: 500, cycleMonths: 1, settlementType: 'delayed' },
+          { id: 'v-1795193781111', name: '大圍THE ONE CONCEPT (B)', fixedRent: 500, cycleMonths: 1, settlementType: 'delayed' }
+        ],
+        cards: [],
+        trades: [],
+        pools: [],
+        ledger: []
+      };
+    }
+
     function openIndexedDB() {
       if (idbInstance) return Promise.resolve(idbInstance);
       return new Promise((resolve, reject) => {
@@ -1281,11 +1377,32 @@
 
     function normalizeParsedState(parsed) {
       const demo = buildDemoState();
+      const rawVenues = Array.isArray(parsed.venues) && parsed.venues.length ? parsed.venues : demo.venues;
+      const venues = rawVenues.map(v => ({
+        ...v,
+        settlementType: (v.settlementType === 'instant' || v.settlementType === 'delayed')
+          ? v.settlementType
+          : inferVenueSettlementType(v.name)
+      }));
+
+      const pools = Array.isArray(parsed.pools)
+        ? parsed.pools.map(p => {
+            const vObj = venues.find(x => x.name === p.location);
+            const delayed = vObj ? vObj.settlementType === 'delayed' : inferVenueSettlementType(p.location) === 'delayed';
+            return {
+              ...p,
+              staffCommPaid: Boolean(p.staffCommPaid),
+              cashReceived: typeof p.cashReceived === 'boolean' ? p.cashReceived : !delayed
+            };
+          })
+        : [];
+
       return {
-        venues: Array.isArray(parsed.venues) && parsed.venues.length ? parsed.venues : demo.venues,
+        openingCash: Number(parsed.openingCash || 0),
+        venues,
         cards: Array.isArray(parsed.cards) ? parsed.cards : [],
         trades: Array.isArray(parsed.trades) ? parsed.trades : [],
-        pools: Array.isArray(parsed.pools) ? parsed.pools.map(p => ({ ...p, staffCommPaid: Boolean(p.staffCommPaid) })) : [],
+        pools,
         ledger: Array.isArray(parsed.ledger) ? parsed.ledger : []
       };
     }
@@ -1295,16 +1412,12 @@
       try {
         const idbData = await idbGetState();
         if (idbData && Array.isArray(idbData.cards) && Array.isArray(idbData.pools) && Array.isArray(idbData.venues)) {
-          const isOldDemo = idbData.cards.some(c => c && c.id === 'card-057') && idbData.pools.some(p => p && p.id === 'pool-c8-ongoing');
-          if (!isOldDemo) {
-            state = normalizeParsedState(idbData);
-            createPoolVenueName = state.venues[0]?.name || '';
-            return;
-          }
+          state = normalizeParsedState(idbData);
+          createPoolVenueName = state.venues[0]?.name || '';
+          return;
         }
       } catch (_) {}
 
-      // 若 IndexedDB 尚未有紀錄，檢查舊版 localStorage 並自動無縫遷移
       try {
         let raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) {
@@ -1574,7 +1687,7 @@
     });
 
     // =========================================================================
-    // 6. 場地與固定租金管理（抽屜＋行內新增）
+    // 6. 場地與固定租金管理（含結算數期設定）
     // =========================================================================
     function toggleVenueDrawer() {
       venueDrawerOpen = !venueDrawerOpen;
@@ -1594,11 +1707,12 @@
       const cycleMonths = cycleSel === 'custom'
         ? Math.max(1, Math.round(Number(document.getElementById('newVenueCustomMonths').value || 1)))
         : Math.max(1, Number(cycleSel || 1));
+      const settlementType = document.getElementById('newVenueSettlementType')?.value || inferVenueSettlementType(name);
 
       if (!name) { showToast('請輸入新場地名稱', 'warn'); return; }
       if (state.venues.some(v => v.name === name)) { showToast('此場地名稱已存在', 'warn'); return; }
 
-      state.venues.push({ id: `v-${Date.now()}`, name, fixedRent, cycleMonths });
+      state.venues.push({ id: `v-${Date.now()}`, name, fixedRent, cycleMonths, settlementType });
       createPoolVenueName = name;
       document.getElementById('newVenueName').value = '';
       document.getElementById('newVenueRent').value = '';
@@ -1611,6 +1725,7 @@
       if (!v) return;
       if (field === 'fixedRent') v.fixedRent = Math.max(0, Number(value || 0));
       else if (field === 'cycleMonths') v.cycleMonths = Math.max(1, Math.round(Number(value || 1)));
+      else if (field === 'settlementType') v.settlementType = value === 'delayed' ? 'delayed' : 'instant';
       saveState(); renderAll();
     }
 
@@ -1636,7 +1751,7 @@
 
       askConfirm(
         '💸 確認記帳交租',
-        `將「${v.name}」本期固定租金 ${fmtHKD(v.fixedRent)}（每 ${v.cycleMonths} 個月）記入交易流水紀錄？`,
+        `將「${v.name}」本期固定租金 ${fmtHKD(v.fixedRent)}（每 ${v.cycleMonths} 個月）記入交易流水並從公司可用現金扣除？`,
         () => {
           state.ledger.unshift({
             id: `led-${Date.now()}`,
@@ -1686,7 +1801,7 @@
       const rent = Math.max(0, Number(document.getElementById('cpQuickVenueRent').value || 0));
       if (!name) { showToast('請輸入場地名稱', 'warn'); return; }
       if (!state.venues.some(v => v.name === name)) {
-        state.venues.push({ id: `v-${Date.now()}`, name, fixedRent: rent, cycleMonths: 1 });
+        state.venues.push({ id: `v-${Date.now()}`, name, fixedRent: rent, cycleMonths: 1, settlementType: inferVenueSettlementType(name) });
       }
       createPoolVenueName = name;
       toggleQuickAddVenue(false);
@@ -1702,6 +1817,7 @@
       listEl.innerHTML = state.venues.map(v => {
         const monthly = Math.round(Number(v.fixedRent || 0) / Math.max(1, Number(v.cycleMonths || 1)));
         const isStd = [1, 3, 6, 12].includes(Number(v.cycleMonths));
+        const stType = v.settlementType || inferVenueSettlementType(v.name);
         return `
           <div class="flex flex-col justify-between gap-3 rounded-xl border border-borderline bg-obsidian p-3 lg:flex-row lg:items-center">
             <div class="flex flex-wrap items-center gap-3">
@@ -1721,6 +1837,13 @@
                 </select>
                 <input id="venue-custom-${v.id}" type="number" min="1" value="${v.cycleMonths}" onchange="updateVenueField('${v.id}', 'cycleMonths', this.value)" class="${isStd ? 'hidden' : ''} v-input-purple num w-14 px-2 py-1 text-center font-mono text-xs font-bold" title="月數" />
               </div>
+              <div class="flex items-center gap-1.5 text-xs">
+                <span class="text-slate-400">結算</span>
+                <select onchange="updateVenueField('${v.id}', 'settlementType', this.value)" class="v-input-gold px-2 py-1 text-xs font-bold">
+                  <option value="instant" ${stType === 'instant' ? 'selected' : ''}>⚡ 即日找數</option>
+                  <option value="delayed" ${stType === 'delayed' ? 'selected' : ''}>⏳ 數期 7–14 日</option>
+                </select>
+              </div>
               <span class="num rounded-md bg-cardbg px-2 py-1 font-mono text-[11px] font-bold text-purple-300">月均 ${fmtHKD(monthly)}</span>
             </div>
 
@@ -1735,7 +1858,8 @@
       if (!createPoolVenueName && state.venues.length) createPoolVenueName = state.venues[0].name;
       document.getElementById('cpVenuePills').innerHTML = state.venues.map(v => {
         const active = createPoolVenueName === v.name;
-        return `<button type="button" onclick="selectCreateVenue('${escHtml(v.name).replace(/'/g, "\\'")}')" class="rounded-xl px-3.5 py-2 text-xs font-extrabold transition ${active ? 'border-2 border-purple-500 bg-purple-600/25 text-white shadow-md shadow-purple-500/20' : 'border border-borderline bg-cardbg text-slate-300 hover:border-purple-500/60'}">📍 ${escHtml(v.name)}</button>`;
+        const isDelayed = (v.settlementType || inferVenueSettlementType(v.name)) === 'delayed';
+        return `<button type="button" onclick="selectCreateVenue('${escHtml(v.name).replace(/'/g, "\\'")}')" class="rounded-xl px-3.5 py-2 text-xs font-extrabold transition ${active ? 'border-2 border-purple-500 bg-purple-600/25 text-white shadow-md shadow-purple-500/20' : 'border border-borderline bg-cardbg text-slate-300 hover:border-purple-500/60'}">📍 ${escHtml(v.name)} <span class="ml-1 text-[10px] ${isDelayed ? 'text-gold-400' : 'text-emerald-400'}">${isDelayed ? '(7-14日數期)' : '(即日)'}</span></button>`;
       }).join('') + `<button type="button" onclick="toggleQuickAddVenue(true)" class="rounded-xl border border-dashed border-emerald-500/50 bg-emerald-500/10 px-3.5 py-2 text-xs font-extrabold text-emerald-300 hover:bg-emerald-500/20">+ 新增場地</button>`;
 
       const vfPills = [{ name: 'ALL', label: '全部場地' }, ...state.venues.map(v => ({ name: v.name, label: `📍 ${v.name}` }))];
@@ -1799,6 +1923,7 @@
       const netProfit = drawRevenue - totalExpense;
       const progressPct = Math.min(100, Math.round((soldDraws / totalDraws) * 100));
       const breakevenDraws = calcBreakevenDraws(totalPutInCost, totalDraws, promoDraws, promoPrice, regularPrice);
+      const cashReceived = isPoolCashReceived(pool);
 
       return {
         totalDraws, promoDraws, regularDraws, promoPrice, regularPrice,
@@ -1808,7 +1933,7 @@
         arUnitPrice, arCount, arTotalCost,
         storeCommEnabled, storeCommPct, storeCommCost,
         staffCommEnabled, staffName, staffCommPct, staffCommCost, staffCommPaid,
-        totalExpense, netProfit, progressPct, breakevenDraws
+        totalExpense, netProfit, progressPct, breakevenDraws, cashReceived
       };
     }
 
@@ -1864,8 +1989,29 @@
     }
 
     // =========================================================================
-    // 9. 分頁 1：📊 總覽儀表板 ＋ 👤 員工佣金待結算彙總表（逐個 POOL 計算）
+    // 9. 分頁 1：📊 總覽儀表板 ＋ 💵 公司實時可用現金流 ＋ 👤 員工佣金彙總表
     // =========================================================================
+    function updateOpeningCash(val) {
+      state.openingCash = Number(val || 0);
+      saveState();
+      renderAll();
+      showToast(`💰 已更新初始營運本金為 ${fmtHKD(state.openingCash)}`, 'success');
+    }
+
+    function togglePoolCashReceived(poolId) {
+      const pool = state.pools.find(p => p.id === poolId);
+      if (!pool) return;
+      pool.cashReceived = !isPoolCashReceived(pool);
+      saveState();
+      renderAll();
+      showToast(
+        pool.cashReceived
+          ? `✅ 已確認「${pool.location} · ${pool.name}」過數入賬，撥入公司可用現金！`
+          : `⏳ 已將「${pool.location} · ${pool.name}」標記為數期未過數`,
+        pool.cashReceived ? 'success' : 'warn'
+      );
+    }
+
     function togglePoolStaffPaid(poolId) {
       const pool = state.pools.find(p => p.id === poolId);
       if (!pool) return;
@@ -2043,8 +2189,12 @@
       const tradeAvg = state.trades.length > 0 ? tradeProfit / state.trades.length : 0;
 
       let poolRev = 0, poolExpense = 0, poolProfit = 0, totalBuybackCount = 0, totalBuybackCash = 0;
+      let poolReceivedCash = 0, poolPendingCash = 0, pendingPoolCount = 0;
+      let poolCashOutflow = 0; // 實際現金支出（客回卡＋AR回收＋已出糧員佣＋店佣，不含非現金卡牌損耗）
       const venueStats = {};
       state.venues.forEach(v => { venueStats[v.name] = { rev: 0, profit: 0, count: 0 }; });
+
+      const poolCashRows = [];
 
       for (const p of state.pools) {
         const m = calcPoolMetrics(p);
@@ -2053,16 +2203,109 @@
         poolProfit += m.netProfit;
         totalBuybackCount += m.buybackEntries.length;
         totalBuybackCash += m.buybackCashTotal;
+
+        const paidStaffOut = m.staffCommPaid ? m.staffCommCost : 0;
+        poolCashOutflow += (m.buybackCashTotal + m.arTotalCost + m.storeCommCost + paidStaffOut);
+
+        if (m.cashReceived) {
+          poolReceivedCash += m.drawRevenue;
+        } else {
+          poolPendingCash += m.drawRevenue;
+          if (m.drawRevenue > 0) pendingPoolCount += 1;
+        }
+
         if (!venueStats[p.location]) venueStats[p.location] = { rev: 0, profit: 0, count: 0 };
         venueStats[p.location].rev += m.drawRevenue;
         venueStats[p.location].profit += m.netProfit;
         venueStats[p.location].count += 1;
+
+        poolCashRows.push({
+          id: p.id,
+          name: p.name,
+          location: p.location,
+          drawRevenue: m.drawRevenue,
+          cashReceived: m.cashReceived,
+          isDelayedVenue: isVenueDelayed(p.location)
+        });
       }
+
+      // 交易流水中屬於卡牌買入、手動雜項、交租的實際現金進出
+      const invPurchaseCashOut = state.ledger
+        .filter(l => l.source === 'inventory' && l.flowType === 'expense')
+        .reduce((s, l) => s + Number(l.amount || 0), 0);
+
+      const manualCashIn = state.ledger
+        .filter(l => l.source === 'manual' && l.flowType === 'income')
+        .reduce((s, l) => s + Number(l.amount || 0), 0);
+
+      const manualCashOut = state.ledger
+        .filter(l => l.source === 'manual' && l.flowType === 'expense')
+        .reduce((s, l) => s + Number(l.amount || 0), 0);
 
       const loggedRentExpense = state.ledger
         .filter(l => l.source === 'pool' && String(l.refId || '').startsWith('rent-'))
         .reduce((s, l) => s + Number(l.amount || 0), 0);
 
+      const openingCash = Number(state.openingCash || 0);
+      const totalActualCashIn = openingCash + tradeRev + poolReceivedCash + manualCashIn;
+      const totalActualCashOut = invPurchaseCashOut + poolCashOutflow + manualCashOut + loggedRentExpense;
+      const availableCashNow = totalActualCashIn - totalActualCashOut;
+      const totalCombinedCash = availableCashNow + poolPendingCash;
+
+      // 更新現金流監控面板 UI
+      const openCashEl = document.getElementById('openingCashInput');
+      if (openCashEl && document.activeElement !== openCashEl) {
+        openCashEl.value = openingCash;
+      }
+
+      const availEl = document.getElementById('cashAvailableNow');
+      if (availEl) {
+        availEl.textContent = fmtHKD(availableCashNow);
+        availEl.className = `num mt-2 font-mono text-3xl font-black ${availableCashNow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
+      const breakEl = document.getElementById('cashAvailableBreakdown');
+      if (breakEl) {
+        breakEl.innerHTML = `
+          <div>已到賬流入 <span class="text-emerald-300">${fmtHKD(totalActualCashIn)}</span> − 實際現金支出 <span class="text-rose-300">${fmtHKD(totalActualCashOut)}</span></div>
+          <div class="text-[10px] text-slate-500">已扣除買卡 ${fmtHKD(invPurchaseCashOut)}、客回卡 ${fmtHKD(totalBuybackCash)} 等支出</div>
+        `;
+      }
+      const pendEl = document.getElementById('cashPendingPool');
+      if (pendEl) pendEl.textContent = fmtHKD(poolPendingCash);
+      const pendSubEl = document.getElementById('cashPendingSub');
+      if (pendSubEl) pendSubEl.textContent = `來自 ${pendingPoolCount} 個數期未過數 POOL（未計入可用現金）`;
+
+      const combEl = document.getElementById('cashTotalCombined');
+      if (combEl) combEl.textContent = fmtHKD(totalCombinedCash);
+      const immSubEl = document.getElementById('cashImmediatePoolSub');
+      if (immSubEl) immSubEl.textContent = `⚡ 已到賬 POOL 抽獎流水：${fmtHKD(poolReceivedCash)}`;
+
+      const settleListEl = document.getElementById('poolCashSettlementList');
+      if (settleListEl) {
+        settleListEl.innerHTML = poolCashRows.length
+          ? poolCashRows.map(pr => `
+              <div class="flex items-center justify-between gap-2 rounded-xl border border-borderline bg-cardbg px-3 py-2 text-xs">
+                <div class="min-w-0">
+                  <div class="truncate font-bold text-white">📍 ${escHtml(pr.location)} · ${escHtml(pr.name)}</div>
+                  <div class="num font-mono text-[11px] text-slate-400">抽獎流水：<strong class="text-white">${fmtHKD(pr.drawRevenue)}</strong></div>
+                </div>
+                <button
+                  type="button"
+                  onclick="togglePoolCashReceived('${pr.id}')"
+                  class="shrink-0 rounded-lg border px-2.5 py-1.5 text-[11px] font-extrabold transition ${
+                    pr.cashReceived
+                      ? 'border-emerald-500/45 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                      : 'border-gold-500/45 bg-gold-500/15 text-gold-400 hover:bg-gold-500/25'
+                  }"
+                >
+                  ${pr.cashReceived ? '✅ 已過數到賬' : '⏳ 數期未過數 (點此確認到賬)'}
+                </button>
+              </div>
+            `).join('')
+          : `<div class="col-span-full py-3 text-center text-xs text-slate-500">暫無福袋 POOL 紀錄</div>`;
+      }
+
+      // 原有總覽 KPI 計算
       const totalMonthlyRent = state.venues.reduce((s, v) => s + (Number(v.fixedRent || 0) / Math.max(1, Number(v.cycleMonths || 1))), 0);
       const totalRev = tradeRev + poolRev;
       const totalCostAndComm = tradeCost + poolExpense + loggedRentExpense;
@@ -2195,8 +2438,8 @@
       saveState(); clearIntakeForm(); renderAll();
       showToast(
         qty > 1
-          ? `✅ 已新增 ${qty} 張獨立「${number}」入庫並記入總成本 ${fmtHKD(totalBatchCost)}！`
-          : `✅ 「${number}」已登記入庫並記入流水！`,
+          ? `✅ 已新增 ${qty} 張獨立「${number}」入庫並從可用現金扣除 ${fmtHKD(totalBatchCost)}！`
+          : `✅ 「${number}」已登記入庫並從可用現金扣除！`,
         'success'
       );
     }
@@ -2607,6 +2850,8 @@
         });
       }
 
+      const delayedVenue = isVenueDelayed(createPoolVenueName);
+
       state.pools.unshift({
         id: poolId, location: createPoolVenueName, name,
         totalDraws, promoDraws, promoPrice, regularDraws, regularPrice,
@@ -2614,6 +2859,7 @@
         storeCommEnabled, storeCommPct,
         staffCommEnabled, staffName, staffCommPct,
         staffCommPaid: false,
+        cashReceived: !delayedVenue,
         status: 'active', createdAt: todayISO(), completedAt: '', entries
       });
 
@@ -2929,7 +3175,12 @@
         const isActive = pool.status === 'active';
         const isExpanded = expandedPoolIds.has(pool.id);
 
+        const cashBadge = m.cashReceived
+          ? `<span class="rounded bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">✅ 已過數</span>`
+          : `<span class="rounded bg-gold-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-gold-400">⏳ 數期未過數</span>`;
+
         const commBadges = [
+          cashBadge,
           m.storeCommEnabled ? `<span class="rounded bg-purple-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-purple-300">店佣${m.storeCommPct}%</span>` : '',
           m.staffCommEnabled ? `<span class="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">員工佣: ${m.staffName ? escHtml(m.staffName) + ' ' : ''}${m.staffCommPct}%</span>` : ''
         ].filter(Boolean).join('');
@@ -3000,7 +3251,18 @@
                 <div class="num font-mono text-xs text-slate-400">
                   總抽數 <strong class="text-white">${m.totalDraws}</strong> · 優惠頭 <strong class="text-gold-400">${m.promoDraws}</strong> 抽 @ $${m.promoPrice} · 正價 <strong class="text-purple-300">${m.regularDraws}</strong> 抽 @ $${m.regularPrice}
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onclick="togglePoolCashReceived('${pool.id}')"
+                    class="rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${
+                      m.cashReceived
+                        ? 'border-emerald-500/45 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25'
+                        : 'border-gold-500/50 bg-gold-500/15 text-gold-400 hover:bg-gold-500/25'
+                    }"
+                  >
+                    ${m.cashReceived ? '✅ 場地已過數入賬' : '⏳ 數期未過數 (點此確認到賬)'}
+                  </button>
                   ${isActive ? `<button type="button" onclick="settlePool('${pool.id}')" class="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">🏁 完結 POOL 並埋數</button>` : ''}
                   <button type="button" onclick="deletePool('${pool.id}')" class="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20">🗑️ 刪除</button>
                 </div>
@@ -3263,7 +3525,7 @@
       document.getElementById('salePriceInput').value = '';
       document.getElementById('saleBuyerInput').value = '';
       saveState(); renderAll();
-      showToast(`💰 已記錄「${c.number}」售出！`, 'success');
+      showToast(`💰 已記錄「${c.number}」售出，可用現金增加 ${fmtHKD(salePrice)}！`, 'success');
     }
 
     function onSwapOutCardChange() {
@@ -3363,7 +3625,7 @@
       document.getElementById('manualAmount').value = '';
       document.getElementById('manualNote').value = '';
       saveState(); renderAll();
-      showToast('✅ 已新增手動雜項記帳', 'success');
+      showToast('✅ 已新增手動雜項記帳並同步更新可用現金', 'success');
     }
 
     function deleteLedgerEntry(id) {
@@ -3418,7 +3680,7 @@
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `LUCKY777_v3_9_5_備份_${todayISO()}.json`;
+      a.href = url; a.download = `LUCKY777_v3_9_6_備份_${todayISO()}.json`;
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
       showToast('💾 已匯出完整備份 JSON', 'success');
     }
@@ -3431,11 +3693,13 @@
         try {
           const p = JSON.parse(reader.result);
           if (!p || typeof p !== 'object') throw new Error('備份格式錯誤');
-          state.venues = Array.isArray(p.venues) && p.venues.length ? p.venues : buildDemoState().venues;
-          state.cards = Array.isArray(p.cards) ? p.cards : [];
-          state.trades = Array.isArray(p.trades) ? p.trades : [];
-          state.pools = Array.isArray(p.pools) ? p.pools.map(x => ({ ...x, staffCommPaid: Boolean(x.staffCommPaid) })) : [];
-          state.ledger = Array.isArray(p.ledger) ? p.ledger : [];
+          const norm = normalizeParsedState(p);
+          state.openingCash = norm.openingCash;
+          state.venues = norm.venues;
+          state.cards = norm.cards;
+          state.trades = norm.trades;
+          state.pools = norm.pools;
+          state.ledger = norm.ledger;
           expandedPoolIds.clear();
           saveState(); renderAll();
           showToast(`📂 還原成功！匯入 ${state.cards.length} 張卡與 ${state.pools.length} 個 POOL`, 'success');
@@ -3447,7 +3711,7 @@
 
     function confirmClearAllData() {
       askConfirm('🧹 清空示範數據', '確定清空所有示範卡牌、Trade 紀錄、福袋 POOL 與流水帳？（場地設定會保留）', () => {
-        state.cards = []; state.trades = []; state.pools = []; state.ledger = [];
+        state.openingCash = 0; state.cards = []; state.trades = []; state.pools = []; state.ledger = [];
         createPoolSelected.clear(); expandedPoolIds.clear();
         saveState(); renderAll();
         showToast('🧹 已清空示範數據，可以正式開始記真數！', 'success');
