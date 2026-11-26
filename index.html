@@ -121,6 +121,7 @@
   <!-- 隱藏檔案輸入元件 -->
   <input id="intakeImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'intake')" />
   <input id="editImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'edit')" />
+  <input id="buybackImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'buyback')" />
   <input id="jsonRestoreInput" type="file" accept=".json,application/json" class="hidden" onchange="handleJsonRestore(event)" />
 
   <!-- ===================================================================== -->
@@ -911,6 +912,7 @@
           <div class="flex gap-1.5 rounded-xl border border-borderline bg-obsidian p-1">
             <button type="button" id="tradeModeSaleBtn" onclick="setTradeMode('sale')" class="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian transition">💰 散卡出售</button>
             <button type="button" id="tradeModeSwapBtn" onclick="setTradeMode('swap')" class="rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition">🔄 以卡換卡 (補差價)</button>
+            <button type="button" id="tradeModeBuybackBtn" onclick="setTradeMode('buyback')" class="rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition">♻️ 散卡回收</button>
           </div>
         </div>
 
@@ -995,6 +997,67 @@
                   <div id="swapProfitPreview" class="num font-mono text-lg font-black text-emerald-400">+HK$ 0</div>
                 </div>
                 <button type="button" onclick="confirmTradeSwap()" class="rounded-xl bg-purple-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500">🔄 確認換卡並入庫</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模式 3：散卡回收（直接入庫「在庫中」並直接扣可用現金流） -->
+        <div id="tradePanelBuyback" class="mt-5 hidden space-y-4">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+            <div class="md:col-span-3">
+              <label for="buybackNumber" class="mb-1.5 block text-xs font-semibold text-slate-300">卡牌編號／名稱</label>
+              <input id="buybackNumber" type="text" placeholder="例如：227/S-P 或 見返り美人皮卡丘" class="v-input w-full px-3.5 py-2.5 font-mono text-sm font-bold placeholder-slate-500" />
+            </div>
+            <div class="md:col-span-3">
+              <label for="buybackGrade" class="mb-1.5 block text-xs font-semibold text-slate-300">評級</label>
+              <select id="buybackGrade" class="v-input w-full px-3.5 py-2.5 text-sm font-bold">
+                <option value="PSA 10">PSA 10</option>
+                <option value="PSA 9">PSA 9</option>
+                <option value="BGS 9.5">BGS 9.5</option>
+                <option value="裸卡">裸卡</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <label for="buybackCost" class="mb-1.5 block text-xs font-semibold text-emerald-400">買入成本 / 回收金額 (HK$)</label>
+              <input id="buybackCost" type="number" min="0" step="any" placeholder="0" class="v-input-emerald num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-emerald-500/40" />
+            </div>
+            <div class="md:col-span-3">
+              <label for="buybackMarket" class="mb-1.5 block text-xs font-semibold text-purple-400">當下市價 (HK$)</label>
+              <input id="buybackMarket" type="number" min="0" step="any" placeholder="0" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-purple-400/40" />
+            </div>
+
+            <div class="md:col-span-6">
+              <label class="mb-1.5 block text-xs font-semibold text-slate-300">上傳卡片圖片</label>
+              <div
+                id="buybackDropzone"
+                onclick="document.getElementById('buybackImgFile').click()"
+                ondragover="handleDragOver(event, 'buybackDropzone')"
+                ondragleave="handleDragLeave(event, 'buybackDropzone')"
+                ondrop="handleDrop(event, 'buyback', 'buybackDropzone')"
+                class="flex min-h-[84px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-borderline bg-inputbg px-4 py-3 transition hover:border-emerald-400/60"
+              >
+                <div class="flex items-center gap-3">
+                  <img id="buybackImgPreview" src="" alt="卡片預覽" class="hidden h-16 w-12 shrink-0 rounded-lg border border-borderline object-cover" />
+                  <div id="buybackImgPlaceholder" class="flex h-14 w-11 shrink-0 items-center justify-center rounded-lg border border-borderline bg-cardbg text-lg">🖼️</div>
+                  <div>
+                    <div class="text-xs font-bold text-slate-200">點擊上傳、拖放圖片，或直接按 <span class="font-mono text-emerald-400">⌘V / Ctrl+V</span> 貼上截圖</div>
+                    <div class="mt-0.5 text-[11px] text-slate-500">自動壓縮為輕量縮圖儲存在本機</div>
+                  </div>
+                </div>
+                <button type="button" id="buybackClearImgBtn" onclick="event.stopPropagation(); clearTempImage('buyback')" class="hidden shrink-0 rounded-lg border border-borderline bg-white/5 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 hover:text-rose-400">清除</button>
+              </div>
+            </div>
+
+            <div class="flex flex-col justify-between md:col-span-6">
+              <div>
+                <label for="buybackNotes" class="mb-1.5 block text-xs font-semibold text-slate-300">備註（例如卡號）</label>
+                <input id="buybackNotes" type="text" placeholder="例如：卡號 / 散卡回收" class="v-input w-full px-3.5 py-2.5 text-sm placeholder-slate-500" />
+              </div>
+              <div class="mt-4 flex items-center justify-end gap-2.5">
+                <button type="button" onclick="clearBuybackForm()" class="rounded-xl border border-borderline bg-obsidian px-5 py-2.5 text-xs font-bold text-slate-300 hover:bg-white/5">清空表單</button>
+                <button type="button" onclick="confirmTradeBuyback()" class="rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-black text-obsidian shadow-lg shadow-amber-500/20 hover:bg-amber-400">♻️ 確認散卡回收並扣現金</button>
               </div>
             </div>
           </div>
@@ -1147,7 +1210,7 @@
     const expandedPoolIds = new Set();
 
     // 暫存圖片
-    const tempImages = { intake: '', edit: '' };
+    const tempImages = { intake: '', edit: '', buyback: '' };
 
     // 彈窗追蹤變數
     let editingCardId = null;
@@ -1482,6 +1545,15 @@ async function saveState() {
         const clr = document.getElementById('intakeClearImgBtn');
         if (src) { img.src = src; img.classList.remove('hidden'); ph.classList.add('hidden'); clr.classList.remove('hidden'); }
         else { img.src = ''; img.classList.add('hidden'); ph.classList.remove('hidden'); clr.classList.add('hidden'); }
+      } else if (target === 'buyback') {
+        const img = document.getElementById('buybackImgPreview');
+        const ph = document.getElementById('buybackImgPlaceholder');
+        const btn = document.getElementById('buybackClearImgBtn');
+        if (src) {
+          img.src = src; img.classList.remove('hidden'); ph.classList.add('hidden'); btn.classList.remove('hidden');
+        } else {
+          img.src = ''; img.classList.add('hidden'); ph.classList.remove('hidden'); btn.classList.add('hidden');
+        }
       } else if (target === 'edit') {
         const img = document.getElementById('editImgPreview');
         const emp = document.getElementById('editImgEmpty');
@@ -1508,7 +1580,7 @@ async function saveState() {
 
     window.addEventListener('paste', (e) => {
       const editOpen = !document.getElementById('editCardModal').classList.contains('hidden');
-      const target = editOpen ? 'edit' : (activeTab === 'inventory' ? 'intake' : null);
+      const target = editOpen ? 'edit' : (activeTab === 'inventory' ? 'intake' : (activeTab === 'trade' && tradeMode === 'buyback' ? 'buyback' : null));
       if (!target) return;
       const items = e.clipboardData?.items;
       if (!items) return;
@@ -2022,13 +2094,16 @@ async function saveState() {
           tradeRev += sp;
           tradeCost += cost;
           tradeProfit += Number(tr.profit || 0);
-          tradeCashNet += (sp - cost);
+          tradeCashNet += sp;
         } else if (tr.type === 'swap') {
           const diff = Number(tr.cashDiff || 0);
           if (diff > 0) tradeRev += diff;
           tradeCost += Number(tr.outCardCost || 0);
           tradeProfit += Number(tr.profit || 0);
           tradeCashNet += diff; // 換卡只計實際現金差價，避免重複計入非現金卡值
+        } else if (tr.type === 'buyback') {
+          const bbCost = Number(tr.buybackCost ?? tr.outCardCost ?? 0);
+          tradeCashNet -= bbCost;
         }
       }
       const tradeAvg = state.trades.length > 0 ? tradeProfit / state.trades.length : 0;
@@ -3293,8 +3368,10 @@ async function saveState() {
       tradeMode = mode;
       document.getElementById('tradeModeSaleBtn').className = mode === 'sale' ? 'rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian transition' : 'rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition';
       document.getElementById('tradeModeSwapBtn').className = mode === 'swap' ? 'rounded-lg bg-purple-600 px-3.5 py-2 text-xs font-black text-white transition' : 'rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition';
+      document.getElementById('tradeModeBuybackBtn').className = mode === 'buyback' ? 'rounded-lg bg-amber-500 px-3.5 py-2 text-xs font-black text-obsidian transition' : 'rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition';
       document.getElementById('tradePanelSale').classList.toggle('hidden', mode !== 'sale');
       document.getElementById('tradePanelSwap').classList.toggle('hidden', mode !== 'swap');
+      document.getElementById('tradePanelBuyback').classList.toggle('hidden', mode !== 'buyback');
     }
 
     function renderTradeSelectOptions() {
@@ -3338,16 +3415,18 @@ async function saveState() {
         <div class="flex flex-col justify-between gap-3 rounded-xl border border-borderline bg-obsidian p-3.5 sm:flex-row sm:items-center">
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <span class="rounded-md px-2 py-0.5 text-[10px] font-extrabold ${tr.type === 'sale' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-purple-500/20 text-purple-300'}">${tr.type === 'sale' ? '💰 散卡出售' : '🔄 以卡換卡'}</span>
-              <span class="font-mono text-xs font-black text-white">${escHtml(tr.outCardNumber)}</span>
+              <span class="rounded-md px-2 py-0.5 text-[10px] font-extrabold ${tr.type === 'sale' ? 'bg-emerald-500/15 text-emerald-300' : (tr.type === 'buyback' ? 'bg-amber-500/15 text-amber-300' : 'bg-purple-500/20 text-purple-300')}">${tr.type === 'sale' ? '💰 散卡出售' : (tr.type === 'buyback' ? '♻️ 散卡回收' : '🔄 以卡換卡')}</span>
+              <span class="font-mono text-xs font-black text-white">${escHtml(tr.outCardNumber || tr.inCardNumber || '')}</span>
               <span class="font-mono text-[10px] text-slate-500">${escHtml(tr.date)}</span>
             </div>
-            <div class="num mt-1 text-xs text-slate-300">${tr.type === 'sale' ? `售價 ${fmtHKD(tr.salePrice)}${tr.buyerNote ? ' · ' + escHtml(tr.buyerNote) : ''}` : `換入 ${escHtml(tr.inCardNumber)} (${escHtml(tr.inCardGrade)}, 市價 ${fmtHKD(tr.inCardMarket)}) · 差價 ${fmtSignedHKD(tr.cashDiff)}`}</div>
+            <div class="num mt-1 text-xs text-slate-300">${tr.type === 'sale' ? `售價 ${fmtHKD(tr.salePrice)}${tr.buyerNote ? ' · ' + escHtml(tr.buyerNote) : ''}` : (tr.type === 'buyback' ? `回收支出 ${fmtHKD(tr.buybackCost ?? tr.outCardCost ?? 0)} · 市價 ${fmtHKD(tr.inCardMarket ?? 0)}${tr.buyerNote ? ' · ' + escHtml(tr.buyerNote) : ''}` : `換入 ${escHtml(tr.inCardNumber)} (${escHtml(tr.inCardGrade)}, 市價 ${fmtHKD(tr.inCardMarket)}) · 差價 ${fmtSignedHKD(tr.cashDiff)}`)}</div>
           </div>
           <div class="flex items-center justify-between gap-4 sm:justify-end">
             <div class="num text-right font-mono">
-              <div class="text-[10px] text-slate-500">出卡成本 ${fmtHKD(tr.outCardCost)}</div>
-              <div class="text-sm font-black ${tr.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${fmtSignedHKD(tr.profit)}</div>
+              ${tr.type === 'buyback'
+                ? `<div class="text-[10px] text-slate-500">已入庫資產庫</div><div class="text-sm font-black text-rose-400">-${fmtHKD(tr.buybackCost ?? tr.outCardCost ?? 0)}</div>`
+                : `<div class="text-[10px] text-slate-500">出卡成本 ${fmtHKD(tr.outCardCost)}</div><div class="text-sm font-black ${tr.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${fmtSignedHKD(tr.profit)}</div>`
+              }
             </div>
             <button type="button" onclick="undoTrade('${tr.id}')" class="rounded-lg border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-400 hover:text-rose-400">↩️ 撤銷</button>
           </div>
@@ -3448,10 +3527,59 @@ async function saveState() {
       showToast(`🔄 換卡完成！新卡「${inNumber}」已自動入庫`, 'success');
     }
 
+    function clearBuybackForm() {
+      ['buybackNumber', 'buybackCost', 'buybackMarket', 'buybackNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const gradeEl = document.getElementById('buybackGrade');
+      if (gradeEl) gradeEl.value = 'PSA 10';
+      clearTempImage('buyback');
+    }
+
+    function confirmTradeBuyback() {
+      const number = document.getElementById('buybackNumber').value.trim();
+      const grade = document.getElementById('buybackGrade').value;
+      const cost = Math.max(0, Number(document.getElementById('buybackCost').value || 0));
+      const marketPrice = Math.max(0, Number(document.getElementById('buybackMarket').value || 0));
+      const notes = document.getElementById('buybackNotes').value.trim();
+      if (!number) { showToast('請輸入卡牌編號／名稱', 'warn'); return; }
+
+      const cardId = `card-${Date.now()}`;
+      const tradeId = `trade-${Date.now() + 1}`;
+
+      state.cards.unshift({
+        id: cardId, number, grade, cost, marketPrice,
+        image: tempImages.buyback || '', notes, status: '在庫中',
+        poolId: null, poolLocation: '', poolName: '', poolTier: '',
+        soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: todayISO(),
+        history: [{ date: todayISO(), text: `♻️ 散卡回收並入庫（回收支出 ${fmtHKD(cost)}${notes ? ' · ' + notes : ''}）` }]
+      });
+
+      state.trades.unshift({
+        id: tradeId, date: todayISO(), type: 'buyback',
+        outCardId: null, outCardNumber: number, outCardGrade: grade,
+        outCardCost: 0, buybackCost: cost, salePrice: 0, buyerNote: notes,
+        inCardId: cardId, inCardNumber: number, inCardGrade: grade,
+        inCardMarket: marketPrice, cashDiff: 0, profit: 0
+      });
+
+      if (cost > 0) {
+        state.ledger.unshift({
+          id: `led-${Date.now() + 2}`, date: todayISO(), source: 'trade',
+          title: `散卡回收：${number} (${grade})`, sub: notes || 'Trade Card 散卡回收',
+          flowType: 'expense', amount: cost, refId: tradeId
+        });
+      }
+
+      saveState(); clearBuybackForm(); renderAll();
+      showToast(`♻️ 「${number}」已散卡回收並入庫，同時扣減可用現金流！`, 'success');
+    }
+
     function undoTrade(tradeId) {
       const tr = state.trades.find(t => t.id === tradeId);
       if (!tr) return;
-      if (tr.type === 'swap' && tr.inCardId) {
+      if ((tr.type === 'swap' || tr.type === 'buyback') && tr.inCardId) {
         const inCard = state.cards.find(c => c.id === tr.inCardId);
         if (inCard && inCard.status !== '在庫中') { showToast('⚠️ 換入新卡目前已不在庫中，無法撤銷', 'error'); return; }
       }
