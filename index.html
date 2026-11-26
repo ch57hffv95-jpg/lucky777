@@ -122,6 +122,10 @@
   <input id="editImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'edit')" />
   <input id="jsonRestoreInput" type="file" accept=".json,application/json" class="hidden" onchange="handleJsonRestore(event)" />
 
+  <!-- ===================================================================== -->
+  <!-- 彈窗群組（絕不使用瀏覽器 alert / confirm）                             -->
+  <!-- ===================================================================== -->
+
   <!-- 1. 通用確認彈窗 -->
   <div id="confirmModal" onclick="closeModal('confirmModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
     <div onclick="event.stopPropagation()" class="panel w-full max-w-sm p-6 shadow-2xl">
@@ -129,7 +133,7 @@
       <p id="confirmMessage" class="mt-2 text-xs leading-relaxed text-slate-400"></p>
       <div class="mt-5 flex justify-end gap-2.5">
         <button type="button" onclick="closeModal('confirmModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-        <button type="button" id="confirmOkBtn" class="rounded-xl bg-rose-600 px-4 py-2 text-xs font-extrabold text-white hover:bg-rose-500">確認</button>
+        <button type="button" id="confirmOkBtn" class="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">確認</button>
       </div>
     </div>
   </div>
@@ -275,7 +279,9 @@
     </div>
   </div>
 
-  <!-- 頂部品牌導覽列 -->
+  <!-- ===================================================================== -->
+  <!-- 頂部品牌導覽列                                                        -->
+  <!-- ===================================================================== -->
   <header class="sticky top-0 z-40 border-b border-borderline bg-[#09090f]/92 backdrop-blur-md">
     <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3.5 sm:px-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -292,13 +298,15 @@
           </div>
         </div>
 
+        <!-- 頂部功能按鈕 -->
         <div class="flex flex-wrap items-center gap-1.5">
           <button type="button" onclick="exportBackupJson()" class="rounded-xl border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-emerald-400/60 hover:text-emerald-400">💾 備份 JSON</button>
-          <button type="button" onclick="document.getElementById('jsonRestoreInput').click()" class="rounded-xl border border-emerald-500/50 bg-emerald-500/15 px-3 py-1.5 text-[11px] font-extrabold text-emerald-300 transition hover:bg-emerald-500/25">📂 還原 JSON 備份</button>
-          <button type="button" onclick="confirmClearAllData()" class="rounded-xl border border-rose-500/35 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-bold text-rose-400 transition hover:bg-rose-500/20">🧹 清空所有紀錄</button>
+          <button type="button" onclick="document.getElementById('jsonRestoreInput').click()" class="rounded-xl border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-purple-400/60 hover:text-purple-300">📂 還原</button>
+          <button type="button" onclick="confirmClearAllData()" class="rounded-xl border border-rose-500/35 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-bold text-rose-400 transition hover:bg-rose-500/20">🧹 清空示範數據</button>
         </div>
       </div>
 
+      <!-- 5 大主分頁導覽 -->
       <nav class="flex gap-1.5 overflow-x-auto rounded-xl border border-borderline bg-obsidian p-1">
         <button type="button" id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">📊 總覽儀表板</button>
         <button type="button" id="tab-inventory" onclick="switchTab('inventory')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">🎴 卡牌資產庫</button>
@@ -309,19 +317,25 @@
     </div>
   </header>
 
+  <!-- ===================================================================== -->
+  <!-- 主內容區域                                                            -->
+  <!-- ===================================================================== -->
   <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
 
-    <!-- 分頁 1：📊 總覽儀表板 -->
+    <!-- =================================================================== -->
+    <!-- 分頁 1：📊 總覽儀表板                                                -->
+    <!-- =================================================================== -->
     <section id="view-dashboard" class="hidden space-y-6">
+      <!-- 頂部 5 張核心 KPI（含獨立「可用現金流」欄位） -->
       <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-5">
         <div class="panel relative overflow-hidden border-emerald-500/45 bg-gradient-to-br from-emerald-500/[0.12] via-cardbg to-cardbg p-5 shadow-lg shadow-emerald-500/10">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-emerald-300">💵 可用現金流 (HK$)</span>
-            <span class="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[9px] font-black text-emerald-300">已確認收款</span>
+            <span class="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[9px] font-black text-emerald-300">已收款落袋</span>
           </div>
           <div id="kpiAvailableCash" class="num mt-1.5 font-mono text-2xl font-black text-emerald-400">HK$ 0</div>
-          <div id="kpiPendingPayoutHint" class="num mt-1 font-mono text-[10px] font-bold text-amber-300">⏳ 數期中待收款：HK$ 0（未到帳）</div>
-          <div id="kpiUnsettledPoolHint" class="num mt-0.5 font-mono text-[10px] font-semibold text-slate-400">🎰 進行中 POOL 暫計：HK$ 0</div>
+          <div id="kpiPendingReceiveHint" class="num mt-1 font-mono text-[10px] font-bold text-amber-300">⏳ 數期中待收款：HK$ 0（已埋數等過數）</div>
+          <div id="kpiUnsettledPoolHint" class="num mt-0.5 font-mono text-[10px] text-slate-400">🎰 進行中 POOL 暫計：HK$ 0（未埋數）</div>
         </div>
         <div class="panel p-5">
           <div class="text-xs font-semibold text-slate-400">累計總營業額 (HK$)</div>
@@ -351,13 +365,14 @@
           <div>
             <div class="flex flex-wrap items-center gap-2">
               <h2 class="text-base font-extrabold text-white">💵 可用現金流計算明細 &amp; 手動租金／雜項加減</h2>
-              <span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-emerald-300">先埋數退卡 → 確認收款先入帳 · 租金純手動</span>
+              <span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-emerald-300">僅計入已確認收款 POOL · 租金純手動加減</span>
             </div>
-            <p class="mt-0.5 text-xs text-slate-400">公式：可用現金流 ＝ Trade Card 現金淨流 ＋ 已確認收款 POOL 淨現金流 ± 手動場地租金與雜項調整（數期中及進行中池均不計入）。</p>
+            <p class="mt-0.5 text-xs text-slate-400">公式：可用現金流 ＝ Trade Card 現金淨流 ＋ 已確認收款 POOL 現金 ± 手動場地租金與雜項調整（數期中待收款 POOL 未確認過數前不計入）。</p>
           </div>
-          <button type="button" onclick="switchTab('pools')" class="self-start rounded-xl border border-purple-500/45 bg-purple-500/15 px-3.5 py-2 text-xs font-extrabold text-purple-200 hover:bg-purple-500/25 lg:self-auto">🎰 前往福袋 POOL 結算釋放 →</button>
+          <button type="button" onclick="jumpToPendingReceivePools()" class="self-start rounded-xl border border-gold-500/45 bg-gold-500/15 px-3.5 py-2 text-xs font-extrabold text-gold-400 hover:bg-gold-500/25 lg:self-auto">⏳ 查看數期中待收款 POOL →</button>
         </div>
 
+        <!-- 4 格組成拆解 -->
         <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div class="rounded-xl border border-borderline bg-obsidian p-3.5">
             <div class="text-[11px] font-semibold text-slate-400">① Trade Card 現金淨流</div>
@@ -375,13 +390,13 @@
             <div class="mt-0.5 text-[10px] text-slate-500">僅計算手動按掣登記之租金與雜項</div>
           </div>
           <div class="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5">
-            <div class="text-[11px] font-extrabold text-emerald-300">＝ 手頭可用現金流</div>
+            <div class="text-[11px] font-extrabold text-emerald-300">＝ 最終可用現金流</div>
             <div id="cfBreakFinalTotal" class="num mt-1 font-mono text-xl font-black text-emerald-400">HK$ 0</div>
-            <div id="cfBreakPendingPayoutNote" class="mt-0.5 font-mono text-[10px] font-bold text-amber-300">⏳ 數期中待收款：0 池 (HK$ 0)</div>
-            <div id="cfBreakUnsettledNote" class="mt-0.5 font-mono text-[10px] text-slate-400">🎰 進行中未埋數：0 池 (HK$ 0)</div>
+            <div id="cfBreakUnsettledNote" class="mt-0.5 font-mono text-[10px] text-amber-300">待收款 0 池 · 進行中 0 池（未計入）</div>
           </div>
         </div>
 
+        <!-- 手動場地租金 / 雜項快速加減表單 -->
         <div class="mt-4 rounded-xl border border-gold-500/30 bg-obsidian p-4">
           <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
             <span class="text-xs font-extrabold text-gold-400">✍️ 手動加減場地租金／雜項（即時更新可用現金流並寫入流水紀錄）</span>
@@ -510,7 +525,9 @@
         </div>
       </div>
 
-      <!-- 員工佣金待結算彙總表 -->
+      <!-- ================================================================= -->
+      <!-- 👤 員工佣金待結算彙總表（逐個 POOL 獨立核算＋出糧追蹤）              -->
+      <!-- ================================================================= -->
       <div id="staffCommissionSection" class="panel p-5 sm:p-6">
         <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
           <div>
@@ -527,10 +544,11 @@
             <button type="button" onclick="switchTab('pools')" class="rounded-xl border border-borderline bg-obsidian px-3 py-2 text-xs font-bold text-slate-300 hover:border-purple-500/60 hover:text-white">前往 POOL 管理 →</button>
           </div>
         </div>
+
         <div id="staffCommissionContainer" class="mt-4 space-y-4"></div>
       </div>
 
-      <!-- 卡牌資產流向狀態 -->
+      <!-- 卡牌資產流向狀態 (5 張卡) -->
       <div class="panel p-5 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-3.5">
           <div>
@@ -570,7 +588,9 @@
       </div>
     </section>
 
-    <!-- 分頁 2：🎴 卡牌資產庫 -->
+    <!-- =================================================================== -->
+    <!-- 分頁 2：🎴 卡牌資產庫（嚴格只保留 6 個入庫欄位）                      -->
+    <!-- =================================================================== -->
     <section id="view-inventory" class="hidden space-y-6">
       <div class="panel p-5 sm:p-6">
         <div class="border-b border-borderline pb-3.5">
@@ -651,8 +671,12 @@
       </div>
     </section>
 
-    <!-- 分頁 3：🎰 福袋 POOL 管理 -->
+    <!-- =================================================================== -->
+    <!-- 分頁 3：🎰 福袋 POOL 管理                                            -->
+    <!-- =================================================================== -->
     <section id="view-pools" class="space-y-5">
+
+      <!-- A. 🏢 場地與手動交租記帳（預設收合，省位清爽） -->
       <div class="panel p-4">
         <div onclick="toggleVenueDrawer()" class="flex cursor-pointer flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-2.5">
@@ -697,7 +721,7 @@
         </div>
       </div>
 
-      <!-- 開立新福袋 POOL -->
+      <!-- B. ✨ 開立新福袋 POOL（預設展開！完整 4 大區塊靜態呈現，收合不清空資料） -->
       <div class="panel p-5 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-4">
           <div>
@@ -708,23 +732,30 @@
         </div>
 
         <div id="createPoolBody" class="mt-5 space-y-5">
+
+          <!-- 區塊 1：場地與基本資料 -->
           <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
             <h3 class="text-sm font-extrabold text-white">場地與基本資料</h3>
+
             <div id="cpVenuePills" class="mt-3 flex flex-wrap items-center gap-2"></div>
+
             <div id="cpQuickAddVenueRow" class="mt-3 hidden flex-wrap items-center gap-2 rounded-xl border border-purple-500/40 bg-cardbg p-3">
               <input id="cpQuickVenueName" type="text" placeholder="輸入新場地名稱..." class="v-input flex-1 px-3 py-2 text-xs font-bold" />
               <input id="cpQuickVenueRent" type="number" min="0" step="any" placeholder="固定租金 (選填)" class="v-input-emerald num w-36 px-3 py-2 font-mono text-xs font-bold" />
               <button type="button" onclick="confirmQuickAddVenue()" class="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">確認新增</button>
               <button type="button" onclick="toggleQuickAddVenue(false)" class="rounded-lg border border-borderline bg-obsidian px-3 py-2 text-xs font-bold text-slate-400 hover:text-white">取消</button>
             </div>
+
             <div class="mt-3.5">
               <label for="cpName" class="mb-1.5 block text-xs font-semibold text-slate-300">POOL 名稱 / 期數</label>
               <input id="cpName" type="text" placeholder="例如：第 15 期 皮卡丘狂歡池" class="v-input w-full px-3.5 py-2.5 text-sm font-bold placeholder-slate-500" />
             </div>
           </div>
 
+          <!-- 區塊 2：抽數與定價設定 -->
           <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
             <h3 class="text-sm font-extrabold text-white">抽數與定價設定</h3>
+
             <div class="mt-3.5 space-y-3.5">
               <div class="max-w-xs">
                 <label for="cpTotalDraws" class="mb-1.5 block text-xs font-bold text-white">總抽數</label>
@@ -760,6 +791,7 @@
             </div>
           </div>
 
+          <!-- 區塊 3：抽佣設定 (選填) -->
           <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
             <h3 class="text-sm font-extrabold text-white">抽佣設定 (選填)</h3>
             <div class="mt-3.5 grid grid-cols-1 gap-3.5 lg:grid-cols-2">
@@ -790,6 +822,7 @@
             </div>
           </div>
 
+          <!-- 區塊 4：從卡牌資產庫挑選獎品卡 -->
           <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <h3 class="text-sm font-extrabold text-white">從卡牌資產庫挑選獎品卡</h3>
@@ -823,24 +856,29 @@
               </button>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- POOL 追蹤清單篩選列 -->
+      <!-- C. POOL 追蹤清單篩選列（四段式：🟢 進行中 → ⏳ 待收款（數期中） → 💵 已收款入帳 → 全部狀態） -->
       <div class="flex flex-col justify-between gap-3 rounded-2xl border border-borderline bg-cardbg p-3.5 lg:flex-row lg:items-center">
         <div class="flex flex-wrap items-center gap-1.5">
           <button type="button" id="poolSfActive" onclick="setPoolStatusFilter('active')" class="rounded-xl bg-emerald-500 px-3.5 py-1.5 text-xs font-black text-obsidian transition">🟢 進行中</button>
-          <button type="button" id="poolSfPendingPayout" onclick="setPoolStatusFilter('pending_payout')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:text-white transition">⏳ 待收款（數期中）</button>
-          <button type="button" id="poolSfCompleted" onclick="setPoolStatusFilter('completed')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">💵 已收款入帳</button>
+          <button type="button" id="poolSfPendingPay" onclick="setPoolStatusFilter('pending_payment')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:text-white transition">⏳ 待收款（數期中）</button>
+          <button type="button" id="poolSfPaid" onclick="setPoolStatusFilter('paid')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">💵 已收款入帳</button>
           <button type="button" id="poolSfAll" onclick="setPoolStatusFilter('ALL')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition">全部狀態</button>
         </div>
+
         <div id="poolVenueFilterPills" class="flex flex-wrap items-center gap-1.5"></div>
       </div>
 
+      <!-- 手風琴 POOL 列表 -->
       <div id="poolsListContainer" class="space-y-3.5"></div>
     </section>
 
-    <!-- 分頁 4：🔄 Trade Card 管理 -->
+    <!-- =================================================================== -->
+    <!-- 分頁 4：🔄 Trade Card 管理                                           -->
+    <!-- =================================================================== -->
     <section id="view-trade" class="hidden space-y-6">
       <div class="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         <div class="panel p-4 sm:p-5">
@@ -873,6 +911,7 @@
           </div>
         </div>
 
+        <!-- 模式 1：散卡出售 -->
         <div id="tradePanelSale" class="mt-5 space-y-4">
           <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
             <div class="space-y-2.5 lg:col-span-6">
@@ -903,6 +942,7 @@
           </div>
         </div>
 
+        <!-- 模式 2：以卡換卡 -->
         <div id="tradePanelSwap" class="mt-5 hidden space-y-4">
           <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
             <div class="space-y-2.5 rounded-xl border border-borderline bg-obsidian p-4 lg:col-span-5">
@@ -966,14 +1006,16 @@
       </div>
     </section>
 
-    <!-- 分頁 5：🧾 交易流水紀錄 -->
+    <!-- =================================================================== -->
+    <!-- 分頁 5：🧾 交易流水紀錄                                              -->
+    <!-- =================================================================== -->
     <section id="view-ledger" class="hidden space-y-6">
       <div class="rounded-2xl border border-purple-500/35 bg-gradient-to-r from-purple-500/15 via-cardbg to-emerald-500/15 p-4 text-xs leading-relaxed text-slate-200">
         <strong class="text-purple-300">📌 交易流水資料來源：</strong>
         本表自動彙總 4 大來源的所有現金流入與流出：
         <span class="font-bold text-emerald-400">🎴 卡牌資產庫</span>、
         <span class="font-bold text-sky-400">🔄 Trade Card</span>、
-        <span class="font-bold text-purple-400">🎰 福袋 POOL</span>、
+        <span class="font-bold text-purple-400">🎰 福袋 POOL（確認收款後寫入）</span>、
         <span class="font-bold text-gold-400">✍️ 手動雜項</span>。
       </div>
 
@@ -992,6 +1034,7 @@
         </div>
       </div>
 
+      <!-- 手動雜項收支表單 -->
       <div class="panel p-5 sm:p-6">
         <h3 class="text-sm font-extrabold text-white">✍️ 新增手動雜項收支（格仔舖租金 / 評級費 / 卡套耗材）</h3>
         <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-12">
@@ -1062,37 +1105,48 @@
   </main>
 
   <script>
+    // =========================================================================
+    // 1. 全域常數與系統狀態
+    // =========================================================================
     const STORAGE_KEY = 'lucky777_biz_v396';
+    const LEGACY_STORAGE_KEYS = ['lucky777_biz_v395', 'lucky777_biz_v394', 'lucky777_biz_v393'];
+
     const PRIZE_TIERS = ['SP賞', 'A賞', 'B賞', 'C賞', 'Last賞', '保底'];
     const PICKER_GRADES = ['全部', 'PSA 10', 'PSA 9', 'BGS 9.5', '裸卡', '其他'];
 
     let state = {
-      venues: [
-        { id: 'v-c8', name: '石門潮格 C8', fixedRent: 1542, cycleMonths: 3 },
-        { id: 'v-c9', name: '石門潮格 C9', fixedRent: 1542, cycleMonths: 3 },
-        { id: 'v-tw', name: '大圍 THE ONE CONCEPT', fixedRent: 500, cycleMonths: 1 },
-        { id: 'v-1795193781111', name: '大圍THE ONE CONCEPT (B)', fixedRent: 500, cycleMonths: 1 }
-      ],
+      venues: [],
       cards: [],
       trades: [],
       pools: [],
       ledger: []
     };
 
-    let activeTab = 'dashboard';
+    let activeTab = 'pools';
     let invFilter = 'ALL';
     let tradeMode = 'sale';
+
+    // 抽屜與開池表單開合狀態
     let venueDrawerOpen = false;
     let createPoolOpen = true;
+
+    // 開池表單狀態
     let createPoolVenueName = '';
     let createPoolGradeFilter = '全部';
     let createPoolSelected = new Map();
+
+    // POOL 列表篩選（預設進行中）
     let poolStatusFilter = 'active';
     let poolVenueFilter = 'ALL';
     let ledgerFilter = 'ALL';
+
+    // 已展開的 POOL ID
     const expandedPoolIds = new Set();
+
+    // 暫存圖片
     const tempImages = { intake: '', edit: '' };
 
+    // 彈窗追蹤變數
     let editingCardId = null;
     let quickPutCardId = null;
     let addMorePoolId = null;
@@ -1100,27 +1154,158 @@
     let pendingConfirmFn = null;
     const pendingBuybackDraft = new Map();
 
+    // =========================================================================
+    // 2. 香港 PTCG 示範數據與無縫載入（大圍 POOL 預設為「已埋數·待收款」供測試）
+    // =========================================================================
+    function buildDemoState() {
+      return {
+        venues: [
+          { id: 'v-c8', name: '石門潮格 C8', fixedRent: 2800, cycleMonths: 1 },
+          { id: 'v-c9', name: '石門潮格 C9', fixedRent: 2800, cycleMonths: 1 },
+          { id: 'v-tw', name: '大圍 THE ONE CONCEPT', fixedRent: 7500, cycleMonths: 3 }
+        ],
+        cards: [
+          {
+            id: 'card-057', number: '057/072', grade: 'PSA 10', cost: 3200, marketPrice: 4300,
+            image: '', notes: '閃光烈空坐 SM3+ · 門市收卡', status: '在庫中',
+            poolId: null, poolLocation: '', poolName: '', poolTier: '',
+            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-10',
+            history: [{ date: '2026-11-10', text: '➕ 入庫登記（買入成本 HK$3,200）' }]
+          },
+          {
+            id: 'card-227', number: '227/S-P', grade: 'PSA 10', cost: 2920, marketPrice: 3650,
+            image: '', notes: '見返り美人皮卡丘 · 日版', status: '在庫中',
+            poolId: null, poolLocation: '', poolName: '', poolTier: '',
+            soldPrice: 0, takenPoolLabel: '', buybackCount: 1, createdAt: '2026-11-05',
+            history: [
+              { date: '2026-11-05', text: '➕ 入庫登記（買入成本 HK$2,900）' },
+              { date: '2026-11-12', text: '♻️ 客人回卡（HK$2,920）from 大圍 THE ONE CONCEPT · 第 11 期伊貝池，重返在庫中' }
+            ]
+          },
+          {
+            id: 'card-151', number: '151/165', grade: '裸卡', cost: 680, marketPrice: 920,
+            image: '', notes: '151 夢幻ex SAR 裸卡靚品', status: '在庫中',
+            poolId: null, poolLocation: '', poolName: '', poolTier: '',
+            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-14',
+            history: [{ date: '2026-11-14', text: '➕ 入庫登記（買入成本 HK$680）' }]
+          },
+          {
+            id: 'card-205', number: '205/165', grade: 'PSA 10', cost: 1650, marketPrice: 2200,
+            image: '', notes: '151 噴火龍ex SAR · 日版', status: '已放 POOL',
+            poolId: 'pool-c8-ongoing', poolLocation: '石門潮格 C8', poolName: '第 12 期 777 狂歡福袋池', poolTier: 'SP賞',
+            soldPrice: 0, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-11',
+            history: [
+              { date: '2026-11-11', text: '➕ 入庫登記（買入成本 HK$1,650）' },
+              { date: '2026-11-15', text: '🎰 放入 POOL：石門潮格 C8 · 第 12 期 777 狂歡福袋池 (SP賞)' }
+            ]
+          },
+          {
+            id: 'card-196', number: '196/196', grade: 'PSA 10', cost: 1950, marketPrice: 2650,
+            image: '', notes: '莉莉艾全力 SR · 日版', status: 'Trading 售出',
+            poolId: null, poolLocation: '', poolName: '', poolTier: '',
+            soldPrice: 2700, takenPoolLabel: '', buybackCount: 0, createdAt: '2026-11-08',
+            history: [
+              { date: '2026-11-08', text: '➕ 入庫登記（買入成本 HK$1,950）' },
+              { date: '2026-11-17', text: '💰 Trading 售出 HK$2,700（Carousell 面交 · 淨利 +HK$750）' }
+            ]
+          },
+          {
+            id: 'card-099', number: '099/071', grade: 'PSA 9', cost: 1200, marketPrice: 1550,
+            image: '', notes: '奇樹 SAR · 日版', status: 'POOL 客領取',
+            poolId: null, poolLocation: '', poolName: '', poolTier: '',
+            soldPrice: 0, takenPoolLabel: '大圍 THE ONE CONCEPT · 第 11 期伊貝池', buybackCount: 0, createdAt: '2026-11-04',
+            history: [
+              { date: '2026-11-04', text: '➕ 入庫登記（買入成本 HK$1,200）' },
+              { date: '2026-11-13', text: '📦 客人領取：大圍 THE ONE CONCEPT · 第 11 期伊貝池' }
+            ]
+          }
+        ],
+        trades: [
+          {
+            id: 'trade-d1', date: '2026-11-17', type: 'sale',
+            outCardId: 'card-196', outCardNumber: '196/196', outCardGrade: 'PSA 10', outCardCost: 1950,
+            salePrice: 2700, buyerNote: 'Carousell 旺角交收',
+            inCardId: null, inCardNumber: '', inCardGrade: '', inCardMarket: 0,
+            cashDiff: 0, profit: 750
+          }
+        ],
+        pools: [
+          {
+            id: 'pool-c8-ongoing', location: '石門潮格 C8', name: '第 12 期 777 狂歡福袋池',
+            totalDraws: 100, promoDraws: 30, promoPrice: 88, regularDraws: 70, regularPrice: 108,
+            soldDraws: 45, arUnitPrice: 10, arCount: 12,
+            storeCommEnabled: true, storeCommPct: 5,
+            staffCommEnabled: true, staffName: '阿明', staffCommPct: 5,
+            staffCommPaid: false, cashReleased: false, paidAt: '',
+            status: 'active', createdAt: '2026-11-15', completedAt: '',
+            entries: [
+              {
+                entryId: 'ent-d1', cardId: 'card-205', tier: 'SP賞',
+                cardNumber: '205/165', cardGrade: 'PSA 10', cardCost: 1650, cardMarketPrice: 2200,
+                cardImage: '', status: '尚在 POOL 內', buybackPrice: 0, resolvedAt: ''
+              }
+            ]
+          },
+          {
+            id: 'pool-tw-done', location: '大圍 THE ONE CONCEPT', name: '第 11 期伊貝池',
+            totalDraws: 80, promoDraws: 20, promoPrice: 88, regularDraws: 60, regularPrice: 108,
+            soldDraws: 80, arUnitPrice: 10, arCount: 25,
+            storeCommEnabled: false, storeCommPct: 5,
+            staffCommEnabled: true, staffName: '阿明', staffCommPct: 8,
+            staffCommPaid: false, cashReleased: false, paidAt: '',
+            status: 'completed', createdAt: '2026-11-08', completedAt: '2026-11-13',
+            entries: [
+              {
+                entryId: 'ent-d2', cardId: 'card-099', tier: 'SP賞',
+                cardNumber: '099/071', cardGrade: 'PSA 9', cardCost: 1200, cardMarketPrice: 1550,
+                cardImage: '', status: '客人領取', buybackPrice: 0, resolvedAt: '2026-11-13'
+              },
+              {
+                entryId: 'ent-d3', cardId: 'card-227', tier: 'A賞',
+                cardNumber: '227/S-P', cardGrade: 'PSA 10', cardCost: 2900, cardMarketPrice: 3650,
+                cardImage: '', status: '客人回卡', buybackPrice: 2920, resolvedAt: '2026-11-12'
+              }
+            ]
+          }
+        ],
+        ledger: [
+          { id: 'led-1', date: '2026-11-17', source: 'trade', title: '散卡出售：196/196 (PSA 10)', sub: 'Carousell 旺角交收', flowType: 'income', amount: 2700, refId: 'trade-d1' },
+          { id: 'led-2', date: '2026-11-14', source: 'inventory', title: '買入入庫：151/165 (裸卡)', sub: '151 夢幻ex SAR 裸卡靚品', flowType: 'expense', amount: 680, refId: 'card-151' }
+        ]
+      };
+    }
+
     function loadState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        let raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          for (const k of LEGACY_STORAGE_KEYS) {
+            raw = localStorage.getItem(k);
+            if (raw) break;
+          }
+        }
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && Array.isArray(parsed.cards) && Array.isArray(parsed.pools) && Array.isArray(parsed.venues)) {
             state = {
-              venues: parsed.venues.length ? parsed.venues : state.venues,
+              venues: parsed.venues.length ? parsed.venues : buildDemoState().venues,
               cards: parsed.cards,
               trades: Array.isArray(parsed.trades) ? parsed.trades : [],
               pools: parsed.pools.map(p => ({
                 ...p,
                 staffCommPaid: Boolean(p.staffCommPaid),
                 cashReleased: p.status === 'completed' ? Boolean(p.cashReleased) : false,
-                receivedAt: p.receivedAt || ''
+                paidAt: p.paidAt || ''
               })),
               ledger: Array.isArray(parsed.ledger) ? parsed.ledger : []
             };
+            createPoolVenueName = state.venues[0]?.name || '';
+            saveState();
+            return;
           }
         }
       } catch (_) {}
+      state = buildDemoState();
       createPoolVenueName = state.venues[0]?.name || '';
       saveState();
     }
@@ -1133,6 +1318,9 @@
       }
     }
 
+    // =========================================================================
+    // 3. 共用工具函式與彈窗控制
+    // =========================================================================
     function fmtHKD(val) {
       const n = Math.round(Number(val || 0));
       return `HK$ ${n.toLocaleString('en-US')}`;
@@ -1172,7 +1360,7 @@
         el.style.opacity = '0';
         el.style.transform = 'translateY(8px)';
         setTimeout(() => el.remove(), 280);
-      }, 2800);
+      }, 3000);
     }
 
     function openModal(id) {
@@ -1189,9 +1377,11 @@
       m.classList.remove('flex');
     }
 
-    function askConfirm(title, message, onConfirm) {
+    function askConfirm(title, message, onConfirm, okBtnClass = 'bg-emerald-500 text-obsidian hover:bg-emerald-400') {
       document.getElementById('confirmTitle').textContent = title;
       document.getElementById('confirmMessage').textContent = message;
+      const okBtn = document.getElementById('confirmOkBtn');
+      okBtn.className = `rounded-xl px-4 py-2 text-xs font-black ${okBtnClass}`;
       pendingConfirmFn = onConfirm;
       openModal('confirmModal');
     }
@@ -1210,6 +1400,9 @@
       openModal('lightboxModal');
     }
 
+    // =========================================================================
+    // 4. 圖片壓縮上傳（Canvas 380px JPEG）、拖放與全域 ⌘V / Ctrl+V
+    // =========================================================================
     function compressImage(blob, maxWidth = 380, quality = 0.78) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1292,6 +1485,9 @@
       }
     });
 
+    // =========================================================================
+    // 5. 場地與手動交租記帳
+    // =========================================================================
     function toggleVenueDrawer() {
       venueDrawerOpen = !venueDrawerOpen;
       document.getElementById('venueDrawerBody').classList.toggle('hidden', !venueDrawerOpen);
@@ -1335,7 +1531,10 @@
       if (!v) return;
       if (selectVal === 'custom') {
         const customInput = document.getElementById(`venue-custom-${venueId}`);
-        if (customInput) { customInput.classList.remove('hidden'); customInput.focus(); }
+        if (customInput) {
+          customInput.classList.remove('hidden');
+          customInput.focus();
+        }
       } else {
         v.cycleMonths = Math.max(1, Number(selectVal || 1));
         saveState(); renderAll();
@@ -1349,7 +1548,7 @@
 
       askConfirm(
         '💸 確認記帳交租',
-        `將「${v.name}」本期固定租金 ${fmtHKD(v.fixedRent)}（每 ${v.cycleMonths} 個月）記入交易流水紀錄？`,
+        `將「${v.name}」本期固定租金 ${fmtHKD(v.fixedRent)}（每 ${v.cycleMonths} 個月）記入交易流水紀錄，並自可用現金流扣除？`,
         () => {
           state.ledger.unshift({
             id: `led-${Date.now()}`,
@@ -1362,8 +1561,9 @@
             refId: `rent-${v.id}`
           });
           saveState(); renderAll();
-          showToast(`💸 已將「${v.name}」租金 ${fmtHKD(v.fixedRent)} 記入流水！`, 'success');
-        }
+          showToast(`💸 已將「${v.name}」租金 ${fmtHKD(v.fixedRent)} 記入流水並從可用現金流扣除！`, 'success');
+        },
+        'bg-rose-600 text-white hover:bg-rose-500'
       );
     }
 
@@ -1377,16 +1577,18 @@
         if (poolVenueFilter === v.name) poolVenueFilter = 'ALL';
         saveState(); renderAll();
         showToast(`🗑️ 已刪除場地「${v.name}」`, 'warn');
-      });
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
     function toggleQuickAddVenue(show) {
       const row = document.getElementById('cpQuickAddVenueRow');
       if (show) {
-        row.classList.remove('hidden'); row.classList.add('flex');
+        row.classList.remove('hidden');
+        row.classList.add('flex');
         document.getElementById('cpQuickVenueName').focus();
       } else {
-        row.classList.add('hidden'); row.classList.remove('flex');
+        row.classList.add('hidden');
+        row.classList.remove('flex');
         document.getElementById('cpQuickVenueName').value = '';
         document.getElementById('cpQuickVenueRent').value = '';
       }
@@ -1455,6 +1657,9 @@
       }).join('');
     }
 
+    // =========================================================================
+    // 6. POOL 財務計算引擎
+    // =========================================================================
     function calcBreakevenDraws(targetCost, totalDraws, promoDraws, promoPrice, regularPrice) {
       if (targetCost <= 0) return 0;
       const pDraws = Math.min(totalDraws, Math.max(0, promoDraws));
@@ -1519,6 +1724,9 @@
       };
     }
 
+    // =========================================================================
+    // 7. 分頁切換與全局重繪
+    // =========================================================================
     function switchTab(tab) {
       activeTab = tab;
       ['dashboard', 'inventory', 'pools', 'trade', 'ledger'].forEach(t => {
@@ -1535,11 +1743,31 @@
       renderAll();
     }
 
-    function jumpToInventoryFilter(statusLabel) { invFilter = statusLabel; switchTab('inventory'); }
-    function jumpToVenuePools(venueName) { poolVenueFilter = venueName; poolStatusFilter = 'ALL'; switchTab('pools'); syncPoolStatusFilterUI(); }
+    function jumpToInventoryFilter(statusLabel) {
+      invFilter = statusLabel;
+      switchTab('inventory');
+    }
+
+    function jumpToVenuePools(venueName) {
+      poolVenueFilter = venueName;
+      poolStatusFilter = 'ALL';
+      switchTab('pools');
+      syncPoolStatusFilterUI();
+    }
+
+    function jumpToPendingReceivePools() {
+      poolVenueFilter = 'ALL';
+      poolStatusFilter = 'pending_payment';
+      switchTab('pools');
+      syncPoolStatusFilterUI();
+    }
+
     function jumpToStaffCommissionSummary() {
       switchTab('dashboard');
-      setTimeout(() => document.getElementById('staffCommissionSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+      setTimeout(() => {
+        const el = document.getElementById('staffCommissionSection');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
     }
 
     function renderAll() {
@@ -1554,12 +1782,21 @@
       renderLedger();
     }
 
+    // =========================================================================
+    // 8. 分頁 1：📊 總覽儀表板 ＋ 👤 員工佣金待結算彙總表
+    // =========================================================================
     function togglePoolStaffPaid(poolId) {
       const pool = state.pools.find(p => p.id === poolId);
       if (!pool) return;
       pool.staffCommPaid = !pool.staffCommPaid;
-      saveState(); renderAll();
-      showToast(pool.staffCommPaid ? `✅ 已標記「${pool.name}」員工佣金為已出糧` : `⏳ 已將「${pool.name}」員工佣金改回待出糧`, pool.staffCommPaid ? 'success' : 'warn');
+      saveState();
+      renderAll();
+      showToast(
+        pool.staffCommPaid
+          ? `✅ 已標記「${pool.name}」員工佣金為已出糧`
+          : `⏳ 已將「${pool.name}」員工佣金改回待出糧`,
+        pool.staffCommPaid ? 'success' : 'warn'
+      );
     }
 
     function renderStaffCommissionSummary() {
@@ -1576,32 +1813,56 @@
 
         const nameKey = m.staffName || '未命名員工';
         if (!staffMap.has(nameKey)) {
-          staffMap.set(nameKey, { staffName: nameKey, settledTotal: 0, activeTotal: 0, combinedTotal: 0, unpaidTotal: 0, poolLines: [] });
+          staffMap.set(nameKey, {
+            staffName: nameKey,
+            settledTotal: 0,
+            activeTotal: 0,
+            combinedTotal: 0,
+            unpaidTotal: 0,
+            poolLines: []
+          });
         }
 
         const rec = staffMap.get(nameKey);
         const commAmt = m.staffCommCost;
-        if (pool.status === 'completed') rec.settledTotal += commAmt;
+        const isCompleted = pool.status === 'completed';
+
+        if (isCompleted) rec.settledTotal += commAmt;
         else rec.activeTotal += commAmt;
 
         rec.combinedTotal += commAmt;
-        if (!m.staffCommPaid) { rec.unpaidTotal += commAmt; grandTotalUnpaid += commAmt; }
+        if (!m.staffCommPaid) {
+          rec.unpaidTotal += commAmt;
+          grandTotalUnpaid += commAmt;
+        }
 
         rec.poolLines.push({
-          poolId: pool.id, poolName: pool.name, location: pool.location, status: pool.status,
-          soldDraws: m.soldDraws, totalDraws: m.totalDraws, drawRevenue: m.drawRevenue,
-          commPct: m.staffCommPct, commAmount: commAmt, isPaid: m.staffCommPaid
+          poolId: pool.id,
+          poolName: pool.name,
+          location: pool.location,
+          status: pool.status,
+          soldDraws: m.soldDraws,
+          totalDraws: m.totalDraws,
+          drawRevenue: m.drawRevenue,
+          commPct: m.staffCommPct,
+          commAmount: commAmt,
+          isPaid: m.staffCommPaid
         });
       }
 
       if (unpaidBadge) unpaidBadge.textContent = fmtHKD(grandTotalUnpaid);
 
       if (staffMap.size === 0) {
-        container.innerHTML = `<div class="rounded-xl border border-dashed border-borderline py-8 text-center text-xs text-slate-500">目前未有啟用「👤 員工佣金」的福袋 POOL，於開池或展開 POOL 時剔選「員工佣金」並填寫員工名稱及 % 即可自動彙總。</div>`;
+        container.innerHTML = `
+          <div class="rounded-xl border border-dashed border-borderline py-8 text-center text-xs text-slate-500">
+            目前未有啟用「👤 員工佣金」的福袋 POOL，於開池或展開 POOL 時剔選「員工佣金」並填寫員工名稱及 % 即可自動彙總。
+          </div>
+        `;
         return;
       }
 
       const staffList = Array.from(staffMap.values()).sort((a, b) => b.combinedTotal - a.combinedTotal);
+
       container.innerHTML = staffList.map(st => {
         const linesHtml = st.poolLines.map(line => {
           const isDone = line.status === 'completed';
@@ -1620,7 +1881,15 @@
               <td class="num py-2.5 pr-3 text-right align-middle font-mono text-xs font-bold text-purple-300">${line.commPct}%</td>
               <td class="num py-2.5 pr-3 text-right align-middle font-mono text-xs font-black text-emerald-400">${fmtHKD(line.commAmount)}</td>
               <td class="py-2.5 text-right align-middle">
-                <button type="button" onclick="togglePoolStaffPaid('${line.poolId}')" class="rounded-lg border px-2.5 py-1.5 text-[11px] font-extrabold transition ${line.isPaid ? 'border-emerald-500/45 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30' : 'border-gold-500/45 bg-gold-500/15 text-gold-400 hover:bg-gold-500/25'}">
+                <button
+                  type="button"
+                  onclick="togglePoolStaffPaid('${line.poolId}')"
+                  class="rounded-lg border px-2.5 py-1.5 text-[11px] font-extrabold transition ${
+                    line.isPaid
+                      ? 'border-emerald-500/45 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                      : 'border-gold-500/45 bg-gold-500/15 text-gold-400 hover:bg-gold-500/25'
+                  }"
+                >
                   ${line.isPaid ? '✅ 已出糧' : '✅ 標記已出糧'}
                 </button>
               </td>
@@ -1632,15 +1901,20 @@
           <div class="rounded-2xl border border-borderline bg-obsidian p-4 sm:p-5">
             <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-3.5 lg:flex-row lg:items-center">
               <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-sm font-black text-emerald-300">👤</div>
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-sm font-black text-emerald-300">
+                  👤
+                </div>
                 <div>
                   <div class="flex flex-wrap items-center gap-2">
                     <h3 class="text-sm font-black text-white sm:text-base">${escHtml(st.staffName)}</h3>
                     <span class="rounded bg-cardbg px-2 py-0.5 font-mono text-[10px] font-bold text-slate-400">負責 ${st.poolLines.length} 個 POOL</span>
                   </div>
-                  <div class="num mt-0.5 font-mono text-[11px] text-gold-400">尚未出糧結欠：<strong class="font-black">${fmtHKD(st.unpaidTotal)}</strong></div>
+                  <div class="num mt-0.5 font-mono text-[11px] text-gold-400">
+                    尚未出糧結欠：<strong class="font-black">${fmtHKD(st.unpaidTotal)}</strong>
+                  </div>
                 </div>
               </div>
+
               <div class="num grid grid-cols-3 gap-2.5 font-mono text-xs">
                 <div class="rounded-xl border border-purple-500/30 bg-cardbg px-3 py-2">
                   <div class="text-[10px] text-purple-300">已完結埋數應出</div>
@@ -1656,6 +1930,7 @@
                 </div>
               </div>
             </div>
+
             <div class="mt-3 overflow-x-auto">
               <table class="w-full min-w-[640px] border-collapse text-left">
                 <thead>
@@ -1697,7 +1972,12 @@
       document.getElementById('dashAdjAmount').value = '';
       document.getElementById('dashAdjNote').value = '';
       saveState(); renderAll();
-      showToast(flowType === 'income' ? `➕ 已手動加入收入 ${fmtHKD(amount)} 至可用現金流` : `➖ 已手動扣除支出 ${fmtHKD(amount)}（${cat}）`, flowType === 'income' ? 'success' : 'warn');
+      showToast(
+        flowType === 'income'
+          ? `➕ 已手動加入收入 ${fmtHKD(amount)} 至可用現金流`
+          : `➖ 已手動扣除支出 ${fmtHKD(amount)}（${cat}）`,
+        flowType === 'income' ? 'success' : 'warn'
+      );
     }
 
     function renderDashboard() {
@@ -1721,9 +2001,9 @@
       const tradeAvg = state.trades.length > 0 ? tradeProfit / state.trades.length : 0;
 
       let poolRev = 0, poolExpense = 0, poolProfit = 0, totalBuybackCount = 0, totalBuybackCash = 0;
-      let receivedPoolCash = 0, receivedPoolCount = 0;
-      let pendingPayoutCash = 0, pendingPayoutCount = 0;
-      let unsettledPoolCash = 0, unsettledPoolCount = 0;
+      let paidPoolCash = 0, paidPoolCount = 0;
+      let pendingPayPoolCash = 0, pendingPayPoolCount = 0;
+      let activePoolCash = 0, activePoolCount = 0;
 
       const venueStats = {};
       state.venues.forEach(v => { venueStats[v.name] = { rev: 0, profit: 0, count: 0 }; });
@@ -1736,15 +2016,16 @@
         totalBuybackCount += m.buybackEntries.length;
         totalBuybackCash += m.buybackCashTotal;
 
+        // 三段式狀態分流：只有「已埋數 且 已確認收款 (cashReleased === true)」才計入可用現金流！
         if (p.status === 'completed' && p.cashReleased) {
-          receivedPoolCash += m.netProfit;
-          receivedPoolCount += 1;
+          paidPoolCash += m.netProfit;
+          paidPoolCount += 1;
         } else if (p.status === 'completed' && !p.cashReleased) {
-          pendingPayoutCash += m.netProfit;
-          pendingPayoutCount += 1;
+          pendingPayPoolCash += m.netProfit;
+          pendingPayPoolCount += 1;
         } else {
-          unsettledPoolCash += m.netProfit;
-          unsettledPoolCount += 1;
+          activePoolCash += m.netProfit;
+          activePoolCount += 1;
         }
 
         if (!venueStats[p.location]) venueStats[p.location] = { rev: 0, profit: 0, count: 0 };
@@ -1766,7 +2047,7 @@
         .reduce((s, l) => s + (l.flowType === 'income' ? Number(l.amount || 0) : -Number(l.amount || 0)), 0);
 
       const manualRentAndMiscNet = loggedRentNet + manualMiscNet;
-      const availableCashFlow = tradeCashNet + receivedPoolCash + manualRentAndMiscNet;
+      const availableCashFlow = tradeCashNet + paidPoolCash + manualRentAndMiscNet;
 
       const totalRev = tradeRev + poolRev;
       const totalCostAndComm = tradeCost + poolExpense + loggedRentExpense;
@@ -1786,26 +2067,42 @@
         acEl.textContent = fmtSignedHKD(availableCashFlow);
         acEl.className = `num mt-1.5 font-mono text-2xl font-black ${availableCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
       }
-      const pendingHint = document.getElementById('kpiPendingPayoutHint');
-      if (pendingHint) pendingHint.textContent = `⏳ 數期中待收款 (${pendingPayoutCount}池)：${fmtSignedHKD(pendingPayoutCash)}（未到帳）`;
+      const pendingHint = document.getElementById('kpiPendingReceiveHint');
+      if (pendingHint) {
+        pendingHint.textContent = `⏳ 數期中待收款 (${pendingPayPoolCount}池)：${fmtSignedHKD(pendingPayPoolCash)}（已埋數等過數）`;
+      }
       const acHint = document.getElementById('kpiUnsettledPoolHint');
-      if (acHint) acHint.textContent = `🎰 進行中 POOL (${unsettledPoolCount}池)：${fmtSignedHKD(unsettledPoolCash)}（未埋數）`;
+      if (acHint) {
+        acHint.textContent = `🎰 進行中 POOL 暫計 (${activePoolCount}池)：${fmtSignedHKD(activePoolCash)}（未埋數）`;
+      }
 
       const cfTradeEl = document.getElementById('cfBreakTrade');
-      if (cfTradeEl) { cfTradeEl.textContent = fmtSignedHKD(tradeCashNet); cfTradeEl.className = `num mt-1 font-mono text-lg font-black ${tradeCashNet >= 0 ? 'text-sky-400' : 'text-rose-400'}`; }
+      if (cfTradeEl) {
+        cfTradeEl.textContent = fmtSignedHKD(tradeCashNet);
+        cfTradeEl.className = `num mt-1 font-mono text-lg font-black ${tradeCashNet >= 0 ? 'text-sky-400' : 'text-rose-400'}`;
+      }
       const cfPoolEl = document.getElementById('cfBreakPoolSettled');
-      if (cfPoolEl) { cfPoolEl.textContent = fmtSignedHKD(receivedPoolCash); cfPoolEl.className = `num mt-1 font-mono text-lg font-black ${receivedPoolCash >= 0 ? 'text-purple-400' : 'text-rose-400'}`; }
+      if (cfPoolEl) {
+        cfPoolEl.textContent = fmtSignedHKD(paidPoolCash);
+        cfPoolEl.className = `num mt-1 font-mono text-lg font-black ${paidPoolCash >= 0 ? 'text-purple-400' : 'text-rose-400'}`;
+      }
       const cfPoolCntEl = document.getElementById('cfBreakPoolCount');
-      if (cfPoolCntEl) cfPoolCntEl.textContent = `共 ${receivedPoolCount} 個已確認收款入帳 POOL`;
+      if (cfPoolCntEl) cfPoolCntEl.textContent = `共 ${paidPoolCount} 個已確認收款 POOL`;
 
       const cfManEl = document.getElementById('cfBreakManualRentMisc');
-      if (cfManEl) { cfManEl.textContent = fmtSignedHKD(manualRentAndMiscNet); cfManEl.className = `num mt-1 font-mono text-lg font-black ${manualRentAndMiscNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}`; }
+      if (cfManEl) {
+        cfManEl.textContent = fmtSignedHKD(manualRentAndMiscNet);
+        cfManEl.className = `num mt-1 font-mono text-lg font-black ${manualRentAndMiscNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
       const cfFinalEl = document.getElementById('cfBreakFinalTotal');
-      if (cfFinalEl) { cfFinalEl.textContent = fmtSignedHKD(availableCashFlow); cfFinalEl.className = `num mt-1 font-mono text-xl font-black ${availableCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`; }
-      const cfPendingNoteEl = document.getElementById('cfBreakPendingPayoutNote');
-      if (cfPendingNoteEl) cfPendingNoteEl.textContent = `⏳ 數期中待收款：${pendingPayoutCount} 池 (${fmtSignedHKD(pendingPayoutCash)})`;
+      if (cfFinalEl) {
+        cfFinalEl.textContent = fmtSignedHKD(availableCashFlow);
+        cfFinalEl.className = `num mt-1 font-mono text-xl font-black ${availableCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
       const cfUnsettledNoteEl = document.getElementById('cfBreakUnsettledNote');
-      if (cfUnsettledNoteEl) cfUnsettledNoteEl.textContent = `🎰 進行中未埋數：${unsettledPoolCount} 池 (${fmtSignedHKD(unsettledPoolCash)})`;
+      if (cfUnsettledNoteEl) {
+        cfUnsettledNoteEl.textContent = `數期中待收款 ${pendingPayPoolCount} 池 (${fmtSignedHKD(pendingPayPoolCash)}) · 進行中 ${activePoolCount} 池（未計入）`;
+      }
 
       document.getElementById('kpiTotalRev').textContent = fmtHKD(totalRev);
       document.getElementById('kpiTotalCostComm').textContent = fmtHKD(totalCostAndComm);
@@ -1874,6 +2171,9 @@
       document.getElementById('flowBuybackCash').textContent = `回卡現金 ${fmtHKD(totalBuybackCash)}`;
     }
 
+    // =========================================================================
+    // 9. 分頁 2：🎴 卡牌資產庫
+    // =========================================================================
     function clearIntakeForm() {
       ['intakeNumber', 'intakeCost', 'intakeMarket', 'intakeNotes'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('intakeGrade').value = 'PSA 10';
@@ -1919,19 +2219,29 @@
     }
 
     function jumpToTradingSale(cardId) {
-      switchTab('trade'); setTradeMode('sale');
+      switchTab('trade');
+      setTradeMode('sale');
       const sel = document.getElementById('saleCardSelect');
-      if (sel) { sel.value = cardId; onSaleCardChange(); }
+      if (sel) {
+        sel.value = cardId;
+        onSaleCardChange();
+      }
     }
 
     function openQuickPutPoolModal(cardId) {
       const activePools = state.pools.filter(p => p.status === 'active');
-      if (!activePools.length) { showToast('目前沒有進行中的 POOL，請先開立新 POOL', 'warn'); switchTab('pools'); return; }
+      if (!activePools.length) {
+        showToast('目前沒有進行中的 POOL，請先開立新 POOL', 'warn');
+        switchTab('pools');
+        return;
+      }
       const c = state.cards.find(x => x.id === cardId && x.status === '在庫中');
       if (!c) return;
       quickPutCardId = cardId;
       document.getElementById('quickPutCardLabel').textContent = `卡牌：${c.number} (${c.grade}) · 成本 ${fmtHKD(c.cost)}`;
-      document.getElementById('quickPutPoolSelect').innerHTML = activePools.map(p => `<option value="${p.id}">📍 ${escHtml(p.location)} · ${escHtml(p.name)}</option>`).join('');
+      document.getElementById('quickPutPoolSelect').innerHTML = activePools.map(p =>
+        `<option value="${p.id}">📍 ${escHtml(p.location)} · ${escHtml(p.name)}</option>`
+      ).join('');
       openModal('quickPutPoolModal');
     }
 
@@ -1942,7 +2252,11 @@
       const pool = state.pools.find(p => p.id === poolId && p.status === 'active');
       if (!card || !pool) { closeModal('quickPutPoolModal'); return; }
 
-      card.status = '已放 POOL'; card.poolId = pool.id; card.poolLocation = pool.location; card.poolName = pool.name; card.poolTier = tier;
+      card.status = '已放 POOL';
+      card.poolId = pool.id;
+      card.poolLocation = pool.location;
+      card.poolName = pool.name;
+      card.poolTier = tier;
       pushHistory(card, `🎰 放入 POOL：${pool.location} · ${pool.name} (${tier})`);
 
       pool.entries.push({
@@ -1988,7 +2302,7 @@
 
       const box = document.getElementById('inventoryListContainer');
       if (!filtered.length) {
-        box.innerHTML = `<div class="rounded-xl border border-dashed border-borderline py-12 text-center text-xs text-slate-500">暫無符合條件的卡牌（可按上方「📂 還原 JSON 備份」匯入你原有的卡牌庫）。</div>`;
+        box.innerHTML = `<div class="rounded-xl border border-dashed border-borderline py-12 text-center text-xs text-slate-500">暫無符合條件的卡牌。</div>`;
         return;
       }
 
@@ -2108,9 +2422,12 @@
         state.cards = state.cards.filter(x => x.id !== cardId);
         saveState(); renderAll();
         showToast(`🗑️ 已刪除「${c.number}」`, 'warn');
-      });
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
+    // =========================================================================
+    // 10. 分頁 3：🎰 福袋 POOL 管理 — 開立新福袋 POOL
+    // =========================================================================
     function toggleCreatePoolForm() {
       createPoolOpen = !createPoolOpen;
       document.getElementById('createPoolBody').classList.toggle('hidden', !createPoolOpen);
@@ -2304,8 +2621,8 @@
         soldDraws: 0, arUnitPrice: 10, arCount: 0,
         storeCommEnabled, storeCommPct,
         staffCommEnabled, staffName, staffCommPct,
-        staffCommPaid: false,
-        status: 'active', cashReleased: false, receivedAt: '', createdAt: todayISO(), completedAt: '', entries
+        staffCommPaid: false, cashReleased: false, paidAt: '',
+        status: 'active', createdAt: todayISO(), completedAt: '', entries
       });
 
       createPoolSelected.clear();
@@ -2318,6 +2635,9 @@
       showToast(`🚀 已正式開立「${createPoolVenueName} · ${name}」！`, 'success');
     }
 
+    // =========================================================================
+    // 11. POOL 三段式流轉：進行中 → 完結埋數（退卡/鎖定） → 確認收款（釋放現金流）
+    // =========================================================================
     function togglePoolExpand(poolId) {
       if (expandedPoolIds.has(poolId)) expandedPoolIds.delete(poolId);
       else expandedPoolIds.add(poolId);
@@ -2327,13 +2647,19 @@
     function setPoolVenueFilter(v) { poolVenueFilter = v; renderVenueUI(); renderPools(); }
 
     function syncPoolStatusFilterUI() {
+      const pendingCnt = state.pools.filter(p => p.status === 'completed' && !p.cashReleased).length;
+      const pendingBtn = document.getElementById('poolSfPendingPay');
+      if (pendingBtn) {
+        pendingBtn.textContent = `⏳ 待收款（數期中${pendingCnt > 0 ? ' · ' + pendingCnt : ''}）`;
+      }
+
       document.getElementById('poolSfActive').className = poolStatusFilter === 'active'
         ? 'rounded-xl bg-emerald-500 px-3.5 py-1.5 text-xs font-black text-obsidian transition'
         : 'rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition';
-      document.getElementById('poolSfPendingPayout').className = poolStatusFilter === 'pending_payout'
-        ? 'rounded-xl bg-amber-400 px-3.5 py-1.5 text-xs font-black text-obsidian transition'
-        : 'rounded-xl border border-amber-500/35 bg-obsidian px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:text-white transition';
-      document.getElementById('poolSfCompleted').className = poolStatusFilter === 'completed'
+      document.getElementById('poolSfPendingPay').className = poolStatusFilter === 'pending_payment'
+        ? 'rounded-xl bg-gold-500 px-3.5 py-1.5 text-xs font-black text-obsidian transition'
+        : 'rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-amber-300 hover:text-white transition';
+      document.getElementById('poolSfPaid').className = poolStatusFilter === 'paid'
         ? 'rounded-xl bg-purple-600 px-3.5 py-1.5 text-xs font-black text-white transition'
         : 'rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition';
       document.getElementById('poolSfAll').className = poolStatusFilter === 'ALL'
@@ -2544,14 +2870,19 @@
       showToast(`✅ 已補放 ${added} 張卡進「${pool.name}」`, 'success');
     }
 
+    // 步驟一：完結 POOL 並埋數（鎖定數字、未抽出卡退回資產庫，轉為「⏳ 待收款（數期中）」，暫不計入可用現金流）
     function settlePool(poolId) {
       const pool = state.pools.find(p => p.id === poolId);
-      if (!pool || pool.status !== 'active') return;
+      if (!pool) return;
+      if (pool.status !== 'active') {
+        showToast('⚠️ 此 POOL 已經完結埋數', 'warn');
+        return;
+      }
       const m = calcPoolMetrics(pool);
 
       askConfirm(
-        '🏁 完結 POOL 並埋數（鎖定帳目）',
-        `「${pool.location} · ${pool.name}」目前售出 ${m.soldDraws}/${m.totalDraws} 抽（流水 ${fmtHKD(m.drawRevenue)}，推算淨現金流 ${fmtSignedHKD(m.netProfit)}）。尚餘 ${m.inPoolEntries.length} 張「尚在 POOL 內」卡牌將即時退回資產庫。埋數後本池會轉入「⏳ 待收款（數期中）」，等你實際收到過數後再撳「💰 確認已收款」，才會釋放加入總覽儀表板「可用現金流」。確定埋數？`,
+        '🏁 完結 POOL 並埋數（鎖定帳目，不提前入現金流）',
+        `「${pool.location} · ${pool.name}」目前售出 ${m.soldDraws}/${m.totalDraws} 抽（推算淨盈虧 ${fmtSignedHKD(m.netProfit)}）。埋數後，尚餘 ${m.inPoolEntries.length} 張「尚在 POOL 內」卡牌將即時退回資產庫供下期使用；本池將轉入「⏳ 待收款（數期中）」，等你實際收到過數按「💰 確認已收款」先會正式計入可用現金流。確定埋數？`,
         () => {
           if (pool.status !== 'active') return;
 
@@ -2568,46 +2899,58 @@
           });
 
           pool.status = 'completed';
-          pool.cashReleased = false;
+          pool.cashReleased = false; // 數期中，尚未確認收款
           pool.completedAt = todayISO();
-          pool.receivedAt = '';
+          pool.paidAt = '';
           expandedPoolIds.delete(pool.id);
-
-          poolStatusFilter = 'pending_payout';
+          poolStatusFilter = 'pending_payment';
           syncPoolStatusFilterUI();
+
           saveState(); renderAll();
-          showToast(`🏁 「${pool.name}」已完成埋數並退回剩餘卡牌！收到過數後請撳「💰 確認已收款」釋放現金流`, 'warn');
-        }
+          showToast(`🏁 「${pool.name}」已埋數退卡並轉入「⏳ 待收款（數期中）」，收到過數後按確認收款即可！`, 'warn');
+        },
+        'bg-purple-600 text-white hover:bg-purple-500'
       );
     }
 
+    // 步驟二：確認已收款並釋放現金流（按實際收款日一次性寫入流水並加入可用現金流）
     function confirmPoolCashReceived(poolId) {
       const pool = state.pools.find(p => p.id === poolId);
       if (!pool) return;
-      if (pool.status !== 'completed') { showToast('請先完成「🏁 完結 POOL 並埋數」', 'warn'); return; }
-      if (pool.cashReleased) { showToast('⚠️ 此 POOL 已經確認收款並釋放至可用現金流，無需重複操作', 'warn'); return; }
+      if (pool.status !== 'completed') {
+        showToast('請先完結埋數後再確認收款', 'warn');
+        return;
+      }
+      if (pool.cashReleased) {
+        showToast('⚠️ 此 POOL 已經確認收款並釋放至可用現金流，無需重複操作', 'warn');
+        return;
+      }
 
       const fm = calcPoolMetrics(pool);
       askConfirm(
-        '💰 確認已收到過數並釋放可用現金流',
-        `確認已實際收到「${pool.location} · ${pool.name}」的結算款項？確認後將把本池淨現金流 ${fmtSignedHKD(fm.netProfit)} 正式釋放加入總覽儀表板「💵 可用現金流」，並按今日 (${todayISO()}) 寫入交易流水紀錄（每個 POOL 僅釋放一次，絕不重複）。`,
+        '💰 確認已收款並釋放可用現金流',
+        `確認已收到「${pool.location} · ${pool.name}」之過數款項？系統將以今日（${todayISO()}）一次性寫入交易流水，並將淨現金流 ${fmtSignedHKD(fm.netProfit)} 正式加入總覽儀表板「💵 可用現金流」。`,
         () => {
-          if (pool.cashReleased) return;
+          if (pool.status !== 'completed' || pool.cashReleased) return;
 
           pool.cashReleased = true;
-          pool.receivedAt = todayISO();
+          pool.paidAt = todayISO();
+
+          // 清除同一 pool.id 的舊流水（如有），確保每個 POOL 絕對只釋放一次
           state.ledger = state.ledger.filter(l => l.refId !== pool.id);
 
           const ts = Date.now();
-          if (fm.drawRevenue > 0) state.ledger.unshift({ id: `led-${ts}-1`, date: todayISO(), source: 'pool', title: `POOL 收款入帳營業額：${pool.location} · ${pool.name}`, sub: `售出 ${fm.soldDraws}/${fm.totalDraws} 抽（埋數日 ${pool.completedAt || '-'}）`, flowType: 'income', amount: fm.drawRevenue, refId: pool.id });
-          if (fm.storeCommCost > 0) state.ledger.unshift({ id: `led-${ts}-2`, date: todayISO(), source: 'pool', title: `POOL 店舖抽佣 (${fm.storeCommPct}%)：${pool.location}`, sub: pool.name, flowType: 'expense', amount: fm.storeCommCost, refId: pool.id });
-          if (fm.staffCommCost > 0) state.ledger.unshift({ id: `led-${ts}-3`, date: todayISO(), source: 'pool', title: `POOL 員工佣金 (${fm.staffName || '員工'} ${fm.staffCommPct}%)：${pool.location}`, sub: pool.name, flowType: 'expense', amount: fm.staffCommCost, refId: pool.id });
-          if (fm.buybackCashTotal > 0) state.ledger.unshift({ id: `led-${ts}-4`, date: todayISO(), source: 'pool', title: `POOL 客回卡支出：${pool.location} · ${pool.name}`, sub: `共回收 ${fm.buybackEntries.length} 張卡`, flowType: 'expense', amount: fm.buybackCashTotal, refId: pool.id });
-          if (fm.arTotalCost > 0) state.ledger.unshift({ id: `led-${ts}-5`, date: todayISO(), source: 'pool', title: `POOL AR 回收支出：${pool.location} · ${pool.name}`, sub: `${fm.arCount} 張 × ${fmtHKD(fm.arUnitPrice)}`, flowType: 'expense', amount: fm.arTotalCost, refId: pool.id });
+          const payDate = todayISO();
+          if (fm.drawRevenue > 0) state.ledger.unshift({ id: `led-${ts}-1`, date: payDate, source: 'pool', title: `POOL 收款營業額：${pool.location} · ${pool.name}`, sub: `埋數 ${fm.completedAt || payDate} · 售出 ${fm.soldDraws}/${fm.totalDraws} 抽`, flowType: 'income', amount: fm.drawRevenue, refId: pool.id });
+          if (fm.storeCommCost > 0) state.ledger.unshift({ id: `led-${ts}-2`, date: payDate, source: 'pool', title: `POOL 店舖抽佣 (${fm.storeCommPct}%)：${pool.location}`, sub: pool.name, flowType: 'expense', amount: fm.storeCommCost, refId: pool.id });
+          if (fm.staffCommCost > 0) state.ledger.unshift({ id: `led-${ts}-3`, date: payDate, source: 'pool', title: `POOL 員工佣金 (${fm.staffName || '員工'} ${fm.staffCommPct}%)：${pool.location}`, sub: pool.name, flowType: 'expense', amount: fm.staffCommCost, refId: pool.id });
+          if (fm.buybackCashTotal > 0) state.ledger.unshift({ id: `led-${ts}-4`, date: payDate, source: 'pool', title: `POOL 客回卡支出：${pool.location} · ${pool.name}`, sub: `共回收 ${fm.buybackEntries.length} 張卡`, flowType: 'expense', amount: fm.buybackCashTotal, refId: pool.id });
+          if (fm.arTotalCost > 0) state.ledger.unshift({ id: `led-${ts}-5`, date: payDate, source: 'pool', title: `POOL AR 回收支出：${pool.location} · ${pool.name}`, sub: `${fm.arCount} 張 × ${fmtHKD(fm.arUnitPrice)}`, flowType: 'expense', amount: fm.arTotalCost, refId: pool.id });
 
           saveState(); renderAll();
-          showToast(`💰 已確認收款！「${pool.name}」${fmtSignedHKD(fm.netProfit)} 已釋放至可用現金流`, 'success');
-        }
+          showToast(`💰 已確認收款！${fmtSignedHKD(fm.netProfit)} 已正式釋放至總覽儀表板可用現金流`, 'success');
+        },
+        'bg-emerald-500 text-obsidian hover:bg-emerald-400'
       );
     }
 
@@ -2625,26 +2968,29 @@
         }
         expandedPoolIds.delete(poolId);
         state.pools = state.pools.filter(p => p.id !== poolId);
+        state.ledger = state.ledger.filter(l => l.refId !== poolId);
         saveState(); renderAll();
         showToast(`🗑️ 已刪除「${pool.name}」`, 'warn');
-      });
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
     function renderPools() {
+      syncPoolStatusFilterUI();
+
       const list = state.pools.filter(p => {
         if (poolVenueFilter !== 'ALL' && p.location !== poolVenueFilter) return false;
         if (poolStatusFilter === 'active' && p.status !== 'active') return false;
-        if (poolStatusFilter === 'pending_payout' && !(p.status === 'completed' && !p.cashReleased)) return false;
-        if (poolStatusFilter === 'completed' && !(p.status === 'completed' && p.cashReleased)) return false;
+        if (poolStatusFilter === 'pending_payment' && !(p.status === 'completed' && !p.cashReleased)) return false;
+        if (poolStatusFilter === 'paid' && !(p.status === 'completed' && p.cashReleased)) return false;
         return true;
       });
 
       const container = document.getElementById('poolsListContainer');
       if (!list.length) {
         const emptyHints = {
-          active: '目前沒有「進行中」的福袋 POOL，可於上方開立或切換查看其他狀態。',
-          pending_payout: '目前沒有「數期中待收款」的 POOL，所有已埋數 POOL 均已確認收款入帳！',
-          completed: '暫無「已收款入帳」的歷史 POOL。',
+          active: '目前沒有「🟢 進行中」的福袋 POOL，可於上方開立或切換查看「⏳ 待收款（數期中）」。',
+          pending_payment: '目前沒有「⏳ 待收款（數期中）」的福袋 POOL，所有已埋數期數均已確認收款！',
+          paid: '目前沒有「💵 已收款入帳」的歷史 POOL。',
           ALL: '暫無符合條件的福袋 POOL。'
         };
         container.innerHTML = `<div class="panel py-12 text-center text-xs text-slate-500">${emptyHints[poolStatusFilter] || emptyHints.ALL}</div>`;
@@ -2654,13 +3000,32 @@
       container.innerHTML = list.map(pool => {
         const m = calcPoolMetrics(pool);
         const isActive = pool.status === 'active';
-        const isPendingPayout = pool.status === 'completed' && !pool.cashReleased;
+        const isPendingPay = pool.status === 'completed' && !pool.cashReleased;
+        const isPaid = pool.status === 'completed' && pool.cashReleased;
         const isExpanded = expandedPoolIds.has(pool.id);
 
         const commBadges = [
           m.storeCommEnabled ? `<span class="rounded bg-purple-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-purple-300">店佣${m.storeCommPct}%</span>` : '',
           m.staffCommEnabled ? `<span class="rounded bg-emerald-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-emerald-300">員工佣: ${m.staffName ? escHtml(m.staffName) + ' ' : ''}${m.staffCommPct}%</span>` : ''
         ].filter(Boolean).join('');
+
+        let statusBadge = '';
+        if (isActive) {
+          statusBadge = `<span class="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold text-emerald-400">🟢 進行中（未計入可用現金）</span>`;
+        } else if (isPendingPay) {
+          statusBadge = `<span class="rounded-md border border-gold-500/40 bg-gold-500/15 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">⏳ 已埋數 (${escHtml(pool.completedAt || '-')}) · 等數期收款</span>`;
+        } else {
+          statusBadge = `<span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold text-emerald-300">💵 已收款入帳 (${escHtml(pool.paidAt || pool.completedAt || '-')})</span>`;
+        }
+
+        let actionBtnHtml = '';
+        if (isActive) {
+          actionBtnHtml = `<button type="button" onclick="event.stopPropagation(); settlePool('${pool.id}')" class="rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-purple-600/20 transition hover:bg-purple-500">🏁 完結 POOL 並埋數</button>`;
+        } else if (isPendingPay) {
+          actionBtnHtml = `<button type="button" onclick="event.stopPropagation(); confirmPoolCashReceived('${pool.id}')" class="rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian shadow-md shadow-emerald-500/25 transition hover:bg-emerald-400">💰 確認已收款（釋放現金流）</button>`;
+        } else {
+          actionBtnHtml = `<span class="rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-extrabold text-emerald-300">✅ 已釋放至可用現金流</span>`;
+        }
 
         let expandedHtml = '';
         if (isExpanded) {
@@ -2729,15 +3094,13 @@
                   總抽數 <strong class="text-white">${m.totalDraws}</strong> · 優惠頭 <strong class="text-gold-400">${m.promoDraws}</strong> 抽 @ $${m.promoPrice} · 正價 <strong class="text-purple-300">${m.regularDraws}</strong> 抽 @ $${m.regularPrice}
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  ${isActive
-                    ? `<button type="button" onclick="settlePool('${pool.id}')" class="rounded-xl bg-purple-600 px-4 py-2 text-xs font-black text-white hover:bg-purple-500">🏁 完結 POOL 並埋數</button>`
-                    : isPendingPayout
-                    ? `<button type="button" onclick="confirmPoolCashReceived('${pool.id}')" class="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-obsidian shadow-md shadow-emerald-500/20 hover:bg-emerald-400">💰 確認已收款（釋放現金流）</button>`
-                    : `<span class="rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-xs font-extrabold text-emerald-300">💵 已於 ${escHtml(pool.receivedAt || pool.completedAt || '-')} 確認收款入帳</span>`}
+                  ${isActive ? `<button type="button" onclick="settlePool('${pool.id}')" class="rounded-xl bg-purple-600 px-4 py-2 text-xs font-black text-white hover:bg-purple-500">🏁 完結 POOL 並埋數</button>` : ''}
+                  ${isPendingPay ? `<button type="button" onclick="confirmPoolCashReceived('${pool.id}')" class="rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">💰 確認已收款（釋放現金流）</button>` : ''}
                   <button type="button" onclick="deletePool('${pool.id}')" class="rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-2 text-xs font-bold text-rose-400 hover:bg-rose-500/20">🗑️ 刪除</button>
                 </div>
               </div>
 
+              <!-- 抽數進度控制 -->
               <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-borderline bg-obsidian p-3.5">
                 <div class="num flex flex-wrap items-center gap-2 text-xs">
                   <span class="font-bold text-white">已售：<strong class="font-mono text-sm text-emerald-400">${m.soldDraws} / ${m.totalDraws} 抽</strong></span>
@@ -2755,6 +3118,7 @@
                 ` : ''}
               </div>
 
+              <!-- 佣金即時微調 & 實時財務結算欄 -->
               <div class="space-y-3 rounded-xl border border-borderline bg-obsidian p-4">
                 ${isActive ? `
                   <div class="flex flex-wrap items-center gap-4 border-b border-borderline pb-3 text-xs">
@@ -2792,11 +3156,12 @@
                   ${m.storeCommEnabled ? `<span class="text-slate-600">−</span><span class="text-purple-300">店佣 ${fmtHKD(m.storeCommCost)}</span>` : ''}
                   ${m.staffCommEnabled ? `<span class="text-slate-600">−</span><span class="text-emerald-300">員佣 (${m.staffName ? escHtml(m.staffName) + ' ' : ''}${m.staffCommPct}%) ${fmtHKD(m.staffCommCost)}</span>` : ''}
                   <span class="text-slate-500">＝</span>
-                  <span class="rounded-lg px-2.5 py-1 font-black ${m.netProfit >= 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}">推算淨盈虧 ${fmtSignedHKD(m.netProfit)}</span>
+                  <span class="rounded-lg px-2.5 py-1 font-black ${m.netProfit >= 0 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400'}">結算淨現金流 ${fmtSignedHKD(m.netProfit)}</span>
                 </div>
               </div>
 
               ${isActive ? `
+                <!-- 獎品卡追蹤與回收管理 -->
                 <div class="rounded-xl border border-borderline bg-obsidian p-4">
                   <div class="flex flex-wrap items-center justify-between gap-2 pb-3">
                     <div class="text-xs font-extrabold text-white">🎴 獎品卡追蹤與回收管理（共 ${m.entries.length} 張 · 原價 ${fmtHKD(m.totalPutInCost)}）</div>
@@ -2819,6 +3184,7 @@
                   </div>
                 </div>
 
+                <!-- 🃏 AR 卡回收專區 -->
                 <div class="flex flex-col justify-between gap-3 rounded-xl border border-gold-500/35 bg-gold-500/[0.06] p-3.5 md:flex-row md:items-center">
                   <div class="flex flex-wrap items-center gap-3 text-xs">
                     <span class="font-black text-gold-400">🃏 AR 卡回收專區</span>
@@ -2837,6 +3203,7 @@
                   <div class="num font-mono text-xs font-black text-gold-400">AR 回收總支出：${fmtHKD(m.arTotalCost)}</div>
                 </div>
               ` : `
+                <!-- 已完結埋數結算報告 -->
                 <div class="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
                   <div class="rounded-xl border border-rose-500/25 bg-obsidian p-3.5">
                     <div class="mb-2 text-xs font-extrabold text-rose-400">📦 客人領取（失去卡牌 · ${m.takenEntries.length} 張）</div>
@@ -2852,18 +3219,15 @@
           `;
         }
 
+        // 收合摘要列
         return `
-          <div class="panel p-4 transition-all ${isExpanded ? 'border-purple-500/50 shadow-lg shadow-purple-500/10' : 'hover:border-purple-500/35'}">
+          <div class="panel p-4 transition-all ${isPendingPay ? 'border-gold-500/45' : isExpanded ? 'border-purple-500/50 shadow-lg shadow-purple-500/10' : 'hover:border-purple-500/35'}">
             <div onclick="togglePoolExpand('${pool.id}')" class="flex cursor-pointer flex-col justify-between gap-3 lg:flex-row lg:items-center">
               <div class="min-w-0 flex-1 space-y-2">
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="rounded-lg border border-purple-500/40 bg-purple-500/15 px-2.5 py-0.5 text-xs font-black text-purple-200">📍 ${escHtml(pool.location)}</span>
                   <h3 class="truncate text-sm font-black text-white sm:text-base">${escHtml(pool.name)}</h3>
-                  ${isActive
-                    ? `<span class="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold text-emerald-400">🟢 進行中（未埋數）</span>`
-                    : isPendingPayout
-                    ? `<span class="rounded-md border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold text-amber-300">⏳ 已埋數 · 等數期收款</span>`
-                    : `<span class="rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-extrabold text-emerald-300">💵 已收款入帳</span>`}
+                  ${statusBadge}
                   ${commBadges}
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
@@ -2871,27 +3235,21 @@
                   <div class="h-1.5 w-32 overflow-hidden rounded-full bg-white/10 sm:w-44">
                     <div class="h-full rounded-full bg-gradient-to-r from-gold-400 via-purple-500 to-emerald-400" style="width:${m.progressPct}%"></div>
                   </div>
-                  ${pool.completedAt ? `<span class="font-mono text-[10px] text-slate-400">埋數日：${escHtml(pool.completedAt)}</span>` : ''}
-                  ${pool.receivedAt ? `<span class="font-mono text-[10px] text-emerald-400">收款日：${escHtml(pool.receivedAt)}</span>` : ''}
                 </div>
               </div>
 
               <div class="flex flex-wrap items-center justify-between gap-4 border-t border-borderline pt-2.5 lg:justify-end lg:border-t-0 lg:pt-0">
                 <div class="num flex items-center gap-4 font-mono text-xs">
                   <div>
-                    <div class="text-[10px] text-slate-500">目前流水</div>
+                    <div class="text-[10px] text-slate-500">抽獎流水</div>
                     <div class="font-black text-white">${fmtHKD(m.drawRevenue)}</div>
                   </div>
                   <div>
-                    <div class="text-[10px] text-slate-500">${isActive ? '推算淨盈虧' : '埋數淨現金流'}</div>
+                    <div class="text-[10px] text-slate-500">${isActive ? '推算淨盈虧' : '結算淨現金流'}</div>
                     <div class="font-black ${m.netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${fmtSignedHKD(m.netProfit)}</div>
                   </div>
                 </div>
-                ${isActive
-                  ? `<button type="button" onclick="event.stopPropagation(); settlePool('${pool.id}')" class="rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-black text-white shadow-md shadow-purple-600/20 transition hover:bg-purple-500">🏁 完結 POOL 並埋數</button>`
-                  : isPendingPayout
-                  ? `<button type="button" onclick="event.stopPropagation(); confirmPoolCashReceived('${pool.id}')" class="rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian shadow-md shadow-emerald-500/25 transition hover:bg-emerald-400">💰 確認已收款（釋放現金流）</button>`
-                  : `<span class="rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-1.5 text-[11px] font-extrabold text-emerald-300">💵 已釋放至可用現金流</span>`}
+                ${actionBtnHtml}
                 <button type="button" onclick="event.stopPropagation(); togglePoolExpand('${pool.id}')" class="rounded-xl border px-3.5 py-2 text-xs font-extrabold transition ${isExpanded ? 'border-purple-500 bg-purple-600/20 text-purple-200' : 'border-borderline bg-obsidian text-slate-200 hover:border-purple-500/60'}">
                   ${isExpanded ? '收合 ▲' : '展開管理 ▼'}
                 </button>
@@ -2903,6 +3261,9 @@
       }).join('');
     }
 
+    // =========================================================================
+    // 12. 分頁 4：🔄 Trade Card 管理
+    // =========================================================================
     function setTradeMode(mode) {
       tradeMode = mode;
       document.getElementById('tradeModeSaleBtn').className = mode === 'sale' ? 'rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian transition' : 'rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition';
@@ -3077,9 +3438,12 @@
         state.ledger = state.ledger.filter(l => l.refId !== tradeId);
         saveState(); renderAll();
         showToast('↩️ 已撤銷交易並還原庫存與流水', 'warn');
-      });
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
+    // =========================================================================
+    // 13. 分頁 5：🧾 交易流水紀錄
+    // =========================================================================
     function setLedgerFilter(f) {
       ledgerFilter = f;
       document.querySelectorAll('.ledger-f-btn').forEach(btn => {
@@ -3108,7 +3472,7 @@
         state.ledger = state.ledger.filter(l => l.id !== id);
         saveState(); renderAll();
         showToast('🗑️ 已刪除流水紀錄', 'warn');
-      });
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
     function renderLedger() {
@@ -3148,6 +3512,9 @@
       }).join('');
     }
 
+    // =========================================================================
+    // 14. JSON 備份匯出、還原與清空示範數據
+    // =========================================================================
     function exportBackupJson() {
       const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -3165,15 +3532,10 @@
         try {
           const p = JSON.parse(reader.result);
           if (!p || typeof p !== 'object') throw new Error('備份格式錯誤');
-          state.venues = Array.isArray(p.venues) && p.venues.length ? p.venues : state.venues;
+          state.venues = Array.isArray(p.venues) && p.venues.length ? p.venues : buildDemoState().venues;
           state.cards = Array.isArray(p.cards) ? p.cards : [];
           state.trades = Array.isArray(p.trades) ? p.trades : [];
-          state.pools = Array.isArray(p.pools) ? p.pools.map(x => ({
-            ...x,
-            staffCommPaid: Boolean(x.staffCommPaid),
-            cashReleased: x.status === 'completed' ? Boolean(x.cashReleased) : false,
-            receivedAt: x.receivedAt || ''
-          })) : [];
+          state.pools = Array.isArray(p.pools) ? p.pools.map(x => ({ ...x, staffCommPaid: Boolean(x.staffCommPaid), cashReleased: x.status === 'completed' ? Boolean(x.cashReleased) : false, paidAt: x.paidAt || '' })) : [];
           state.ledger = Array.isArray(p.ledger) ? p.ledger : [];
           expandedPoolIds.clear();
           saveState(); renderAll();
@@ -3185,14 +3547,17 @@
     }
 
     function confirmClearAllData() {
-      askConfirm('🧹 清空所有紀錄', '確定清空所有卡牌、Trade 紀錄、福袋 POOL 與流水帳？（場地設定會保留）', () => {
+      askConfirm('🧹 清空示範數據', '確定清空所有示範卡牌、Trade 紀錄、福袋 POOL 與流水帳？（場地設定會保留）', () => {
         state.cards = []; state.trades = []; state.pools = []; state.ledger = [];
         createPoolSelected.clear(); expandedPoolIds.clear();
         saveState(); renderAll();
-        showToast('🧹 已清空所有紀錄', 'success');
-      });
+        showToast('🧹 已清空示範數據，可以正式開始記真數！', 'success');
+      }, 'bg-rose-600 text-white hover:bg-rose-500');
     }
 
+    // =========================================================================
+    // 15. 頁面啟動初始化
+    // =========================================================================
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('manualDate').value = todayISO();
       loadState();
