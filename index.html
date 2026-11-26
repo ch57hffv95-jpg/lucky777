@@ -1,780 +1,276 @@
-<!DOCTYPE html>
-<html lang="zh-HK" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LUCKY 777 BIZ PRO — v3.9.5 雙業務管理系統</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
-            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
-          },
-          colors: {
-            obsidian: '#09090f',
-            cardbg: '#13131f',
-            inputbg: '#1b1b2b',
-            borderline: '#26263a',
-            emerald: {
-              400: '#34d399',
-              500: '#10b981',
-              600: '#059669'
-            },
-            purple: {
-              400: '#a78bfa',
-              500: '#8b5cf6',
-              600: '#7c3aed'
-            },
-            gold: {
-              400: '#fbbf24',
-              500: '#f59e0b',
-              600: '#d97706'
-            }
-          }
-        }
-      }
-    };
-  </script>
-  <style>
-    body {
-      background-color: #09090f;
-      color: #f3f4f6;
-      font-family: 'Inter', 'Noto Sans TC', sans-serif;
-      background-image:
-        radial-gradient(circle at 10% 0%, rgba(139, 92, 246, 0.14), transparent 38%),
-        radial-gradient(circle at 90% 4%, rgba(16, 185, 129, 0.10), transparent 36%);
-    }
-    .num { font-variant-numeric: tabular-nums; }
-    .panel {
-      background-color: #13131f;
-      border: 1px solid #26263a;
-      border-radius: 16px;
-    }
-    .v-input {
-      background-color: #1b1b2b;
-      border: 1px solid #2d2d44;
-      border-radius: 12px;
-      color: #f3f4f6;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-    .v-input:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
-    }
-    .v-input-emerald {
-      background-color: #1b1b2b;
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      border-radius: 12px;
-      color: #34d399;
-    }
-    .v-input-emerald:focus {
-      outline: none;
-      border-color: #10b981;
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.22);
-    }
-    .v-input-purple {
-      background-color: #1b1b2b;
-      border: 1px solid rgba(139, 92, 246, 0.55);
-      border-radius: 12px;
-      color: #c4b5fd;
-    }
-    .v-input-purple:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
-    }
-    .v-input-gold {
-      background-color: #1b1b2b;
-      border: 1px solid rgba(245, 158, 11, 0.55);
-      border-radius: 12px;
-      color: #fbbf24;
-    }
-    .v-input-gold:focus {
-      outline: none;
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.22);
-    }
-    .dropzone-hover {
-      border-color: #10b981 !important;
-      background-color: rgba(16, 185, 129, 0.10) !important;
-    }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #09090f; }
-    ::-webkit-scrollbar-thumb { background: #2e2e47; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
-  </style>
-</head>
-<body class="min-h-screen antialiased selection:bg-purple-500/30 selection:text-purple-200">
-  <div id="toastContainer" class="pointer-events-none fixed bottom-5 right-5 z-[80] flex w-full max-w-sm flex-col gap-2 px-4 sm:px-0"></div>
 
-  <div id="loginOverlay" class="fixed inset-0 z-[70] flex items-center justify-center bg-[#09090f]/98 p-4 backdrop-blur-xl">
-    <div class="w-full max-w-md rounded-3xl border border-borderline bg-cardbg/95 p-7 shadow-2xl shadow-purple-500/15 sm:p-8">
-      <div class="flex flex-col items-center text-center">
-        <div class="flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-500/45 bg-gradient-to-br from-purple-500/25 via-emerald-500/15 to-gold-500/10 shadow-lg shadow-purple-500/20">
-          <span class="font-mono text-lg font-black text-emerald-400">777</span>
-        </div>
-        <h1 class="mt-4 text-xl font-black tracking-tight text-white">LUCKY 777 BIZ PRO</h1>
-        <p class="mt-1 text-xs font-medium text-slate-400">v3.9.6 雙業務管理系統 · 內部專用登入</p>
-      </div>
-      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="mt-6 space-y-4">
-        <div>
-          <label for="loginUsername" class="mb-1.5 block text-xs font-semibold text-slate-300">賬戶名稱</label>
-          <input id="loginUsername" type="text" autocomplete="username" placeholder="輸入賬戶名稱" class="v-input w-full px-4 py-3 text-sm font-semibold" required />
-        </div>
-        <div>
-          <label for="loginPassword" class="mb-1.5 block text-xs font-semibold text-slate-300">登入密碼</label>
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="輸入登入密碼" class="v-input w-full px-4 py-3 text-sm font-semibold" required />
-        </div>
-        <div id="loginErrorMsg" class="hidden rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2 text-xs font-bold text-rose-400"></div>
-        <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-purple-600 to-emerald-500 py-3.5 text-sm font-black text-white shadow-lg shadow-purple-600/25 transition hover:opacity-95">🔓 安全登入系統</button>
-      </form>
-      <div class="mt-5 rounded-xl border border-borderline bg-obsidian/90 px-3.5 py-2.5 text-center text-[11px] text-slate-400">
-        預設賬戶：<span class="font-mono font-bold text-emerald-400">lucky777</span> ／ 密碼：<span class="font-mono font-bold text-purple-400">777888</span>
-      </div>
-    </div>
-  </div>
+777
+LUCKY 777 BIZ PRO
+v3.9.5 雙業務管理系統 · 內部專用登入
+賬戶名稱
+登入密碼
 
-  <input id="intakeImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'intake')" />
-  <input id="editImgFile" type="file" accept="image/*" class="hidden" onchange="handleImageFile(event, 'edit')" />
-  <input id="jsonRestoreInput" type="file" accept=".json,application/json" class="hidden" onchange="handleJsonRestore(event)" />
+🔓 安全登入系統
+預設賬戶：lucky777 ／ 密碼：777888
+⚠️ 確認操作
 
-  <div id="confirmModal" onclick="closeModal('confirmModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel w-full max-w-sm p-6 shadow-2xl">
-      <h3 id="confirmTitle" class="text-base font-extrabold text-white">⚠️ 確認操作</h3>
-      <p id="confirmMessage" class="mt-2 text-xs leading-relaxed text-slate-400"></p>
-      <div class="mt-5 flex justify-end gap-2.5">
-        <button type="button" onclick="closeModal('confirmModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-        <button type="button" id="confirmOkBtn" class="rounded-xl bg-rose-600 px-4 py-2 text-xs font-extrabold text-white hover:bg-rose-500">確認</button>
-      </div>
-    </div>
-  </div>
+取消 確認
+🔑 修改登入賬戶與密碼
+✕
+賬戶名稱
+新登入密碼
+確認新密碼
+取消 💾 儲存新密碼
+✕
 
-  <div id="authModal" onclick="closeModal('authModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel w-full max-w-sm p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-borderline pb-3">
-        <h3 class="text-base font-extrabold text-white">🔑 修改登入賬戶與密碼</h3>
-        <button type="button" onclick="closeModal('authModal')" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div class="mt-4 space-y-3.5">
-        <div><label class="mb-1 block text-xs font-semibold text-slate-300">賬戶名稱</label><input id="authNewUser" type="text" class="v-input w-full px-3.5 py-2.5 text-sm font-bold" /></div>
-        <div><label class="mb-1 block text-xs font-semibold text-slate-300">新登入密碼</label><input id="authNewPass" type="password" placeholder="輸入新密碼" class="v-input w-full px-3.5 py-2.5 text-sm font-bold" /></div>
-        <div><label class="mb-1 block text-xs font-semibold text-slate-300">確認新密碼</label><input id="authConfirmPass" type="password" placeholder="再次輸入新密碼" class="v-input w-full px-3.5 py-2.5 text-sm font-bold" /></div>
-      </div>
-      <div class="mt-5 flex justify-end gap-2.5">
-        <button type="button" onclick="closeModal('authModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-        <button type="button" onclick="saveAuthCredentials()" class="rounded-xl bg-emerald-500 px-5 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">💾 儲存新密碼</button>
-      </div>
-    </div>
-  </div>
 
-  <div id="lightboxModal" onclick="closeModal('lightboxModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel relative flex max-w-md flex-col items-center p-4 shadow-2xl">
-      <button type="button" onclick="closeModal('lightboxModal')" class="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-borderline bg-obsidian text-xs font-bold text-slate-300 hover:border-emerald-400 hover:text-emerald-400">✕</button>
-      <img id="lightboxImg" src="" alt="卡牌大圖" class="max-h-[75vh] w-auto rounded-xl object-contain" />
-      <div id="lightboxTitle" class="mt-3 text-center text-sm font-extrabold text-white"></div>
-      <div id="lightboxSub" class="mt-0.5 font-mono text-xs text-purple-400"></div>
-    </div>
-  </div>
+📜 卡牌流向履歷
+✕
 
-  <div id="historyModal" onclick="closeModal('historyModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel max-h-[88vh] w-full max-w-lg overflow-y-auto p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-borderline pb-3">
-        <h3 id="historyTitle" class="text-base font-extrabold text-white">📜 卡牌流向履歷</h3>
-        <button type="button" onclick="closeModal('historyModal')" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div id="historySummary" class="mt-3 flex items-center gap-3 rounded-xl border border-borderline bg-obsidian p-3"></div>
-      <div id="historyList" class="mt-4 space-y-2.5"></div>
-      <div class="mt-5 flex justify-end"><button type="button" onclick="closeModal('historyModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">關閉</button></div>
-    </div>
-  </div>
 
-  <div id="editCardModal" onclick="closeModal('editCardModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel max-h-[92vh] w-full max-w-lg overflow-y-auto p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-borderline pb-3">
-        <h3 class="text-base font-extrabold text-white">✏️ 編輯卡牌資料</h3>
-        <button type="button" onclick="closeModal('editCardModal')" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div class="mt-4 space-y-3.5">
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <div><label class="mb-1 block text-xs font-semibold text-slate-300">卡牌編號</label><input id="editNumber" type="text" class="v-input w-full px-3.5 py-2.5 font-mono text-sm font-bold" /></div>
-          <div><label class="mb-1 block text-xs font-semibold text-slate-300">評級</label><select id="editGrade" class="v-input w-full px-3.5 py-2.5 text-sm font-bold"><option value="PSA 10">PSA 10</option><option value="PSA 9">PSA 9</option><option value="BGS 9.5">BGS 9.5</option><option value="裸卡">裸卡</option><option value="其他">其他</option></select></div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="mb-1 block text-xs font-semibold text-emerald-400">買入成本 (HK$)</label><input id="editCost" type="number" min="0" step="any" class="v-input-emerald num w-full px-3.5 py-2.5 font-mono text-sm font-bold" /></div>
-          <div><label class="mb-1 block text-xs font-semibold text-purple-400">當下市價 (HK$)</label><input id="editMarket" type="number" min="0" step="any" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-bold" /></div>
-        </div>
-        <div><label class="mb-1 block text-xs font-semibold text-slate-300">來源 / 備註</label><input id="editNotes" type="text" class="v-input w-full px-3.5 py-2.5 text-sm" /></div>
-        <div>
-          <label class="mb-1.5 block text-xs font-semibold text-slate-300">卡片圖片（點擊上傳或按 ⌘V / Ctrl+V 貼上）</label>
-          <div class="flex items-center gap-3 rounded-xl border border-borderline bg-obsidian p-3">
-            <img id="editImgPreview" src="" alt="預覽" class="hidden h-20 w-14 rounded-lg border border-borderline object-cover" />
-            <div id="editImgEmpty" class="flex h-20 w-14 items-center justify-center rounded-lg border border-dashed border-borderline text-[10px] text-slate-500">無圖</div>
-            <div class="flex flex-wrap gap-2">
-              <button type="button" onclick="document.getElementById('editImgFile').click()" class="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20">📷 上傳圖片</button>
-              <button type="button" onclick="clearTempImage('edit')" class="rounded-lg border border-borderline bg-white/5 px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-rose-400">清除圖片</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="mt-5 flex justify-end gap-2.5">
-        <button type="button" onclick="closeModal('editCardModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-        <button type="button" onclick="saveEditCard()" class="rounded-xl bg-emerald-500 px-5 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">💾 儲存變更</button>
-      </div>
-    </div>
-  </div>
+關閉
+✏️ 編輯卡牌資料
+✕
+卡牌編號
+評級
+              PSA 10
+              PSA 9
+              BGS 9.5
+              裸卡
+              其他
+            
+買入成本 (HK$)
+當下市價 (HK$)
+來源 / 備註
+卡片圖片（點擊上傳或按 ⌘V / Ctrl+V 貼上）
+無圖
+📷 上傳圖片 清除圖片
+取消 💾 儲存變更
+🎰 放入進行中 POOL
+✕
 
-  <div id="quickPutPoolModal" onclick="closeModal('quickPutPoolModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel w-full max-w-md p-6 shadow-2xl">
-      <div class="flex items-center justify-between border-b border-borderline pb-3">
-        <h3 class="text-base font-extrabold text-white">🎰 放入進行中 POOL</h3>
-        <button type="button" onclick="closeModal('quickPutPoolModal')" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div id="quickPutCardLabel" class="mt-3 rounded-xl border border-borderline bg-obsidian px-3.5 py-2.5 text-xs font-bold text-slate-200"></div>
-      <div class="mt-4 space-y-3.5">
-        <div><label class="mb-1.5 block text-xs font-semibold text-slate-300">選擇進行中 POOL</label><select id="quickPutPoolSelect" class="v-input w-full px-3.5 py-2.5 text-sm font-bold"></select></div>
-        <div><label class="mb-1.5 block text-xs font-semibold text-slate-300">設定獎項等級</label><select id="quickPutTierSelect" class="v-input w-full px-3.5 py-2.5 text-sm font-bold text-purple-300"><option value="SP賞">SP賞</option><option value="A賞" selected>A賞</option><option value="B賞">B賞</option><option value="C賞">C賞</option><option value="Last賞">Last賞</option><option value="保底">保底</option></select></div>
-      </div>
-      <div class="mt-5 flex justify-end gap-2.5">
-        <button type="button" onclick="closeModal('quickPutPoolModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-        <button type="button" onclick="confirmQuickPutPool()" class="rounded-xl bg-purple-600 px-5 py-2 text-xs font-black text-white hover:bg-purple-500">✅ 確認放入 POOL</button>
-      </div>
-    </div>
-  </div>
+選擇進行中 POOL
+設定獎項等級
+            SP賞
+            A賞
+            B賞
+            C賞
+            Last賞
+            保底
+          
+取消 ✅ 確認放入 POOL
+➕ 補放資產庫卡牌到 POOL
+點選「🟢 在庫中」的卡牌並設定獎項等級追加進此 POOL。
+✕
 
-  <div id="poolAddMoreModal" onclick="closeModal('poolAddMoreModal')" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-    <div onclick="event.stopPropagation()" class="panel flex max-h-[90vh] w-full max-w-3xl flex-col p-5 shadow-2xl sm:p-6">
-      <div class="flex items-center justify-between border-b border-borderline pb-3">
-        <div><h3 id="poolAddMoreTitle" class="text-base font-extrabold text-white">➕ 補放資產庫卡牌到 POOL</h3><p class="mt-0.5 text-[11px] text-slate-400">點選「🟢 在庫中」的卡牌並設定獎項等級追加進此 POOL。</p></div>
-        <button type="button" onclick="closeModal('poolAddMoreModal')" class="text-slate-400 hover:text-white">✕</button>
-      </div>
-      <div class="mt-3"><input id="poolAddMoreSearch" type="text" oninput="renderPoolAddMoreGrid()" placeholder="🔍 搜尋在庫卡牌編號 / 備註..." class="v-input w-full px-3.5 py-2 text-xs" /></div>
-      <div id="poolAddMoreGrid" class="mt-3 grid max-h-64 grid-cols-2 gap-2.5 overflow-y-auto pr-1 sm:grid-cols-3 lg:grid-cols-4"></div>
-      <div id="poolAddMoreCart" class="mt-3 max-h-32 space-y-1.5 overflow-y-auto"></div>
-      <div class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-borderline pt-3.5">
-        <div class="num text-xs text-slate-300">已選 <strong id="addMoreCount" class="font-mono text-purple-400">0</strong> 張｜原價合計 <strong id="addMoreCost" class="font-mono text-emerald-400">HK$ 0</strong></div>
-        <div class="flex gap-2">
-          <button type="button" onclick="closeModal('poolAddMoreModal')" class="rounded-xl border border-borderline bg-obsidian px-4 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">取消</button>
-          <button type="button" onclick="confirmPoolAddMore()" class="rounded-xl bg-emerald-500 px-5 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">✅ 確認補放入 POOL</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <header class="sticky top-0 z-40 border-b border-borderline bg-[#09090f]/92 backdrop-blur-md">
-    <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3.5 sm:px-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-purple-500/45 bg-gradient-to-br from-purple-600/25 via-emerald-500/15 to-gold-500/10 shadow-lg shadow-purple-500/10">
-            <span class="font-mono text-sm font-black text-emerald-400">777</span>
-          </div>
-          <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <h1 class="text-base font-black tracking-tight text-white sm:text-lg">LUCKY 777 BIZ PRO</h1>
-              <span class="rounded-md border border-purple-500/40 bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-purple-300">v3.9.6 雙業務管理系統 · IndexedDB</span>
-            </div>
-            <p class="text-[11px] text-slate-400">香港 Pokémon TCG · Trading 散卡買賣 × 福袋 POOL 全流程經營系統</p>
-          </div>
-        </div>
-        <div class="flex flex-wrap items-center gap-1.5">
-          <button type="button" onclick="exportBackupJson()" class="rounded-xl border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-emerald-400/60 hover:text-emerald-400">💾 備份 JSON</button>
-          <button type="button" onclick="document.getElementById('jsonRestoreInput').click()" class="rounded-xl border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-purple-400/60 hover:text-purple-300">📂 還原</button>
-          <button type="button" onclick="confirmClearAllData()" class="rounded-xl border border-rose-500/35 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-bold text-rose-400 transition hover:bg-rose-500/20">🧹 清空示範數據</button>
-          <button type="button" onclick="openAuthModal()" class="rounded-xl border border-borderline bg-cardbg px-2.5 py-1.5 text-[11px] font-bold text-slate-300 transition hover:border-gold-400/60 hover:text-gold-400">🔑 修改密碼</button>
-          <button type="button" onclick="lockLogout()" class="rounded-xl border border-purple-500/40 bg-purple-500/15 px-2.5 py-1.5 text-[11px] font-bold text-purple-300 transition hover:bg-purple-500/25">🔒 鎖定登出</button>
-        </div>
-      </div>
-      <nav class="flex gap-1.5 overflow-x-auto rounded-xl border border-borderline bg-obsidian p-1">
-        <button type="button" id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">📊 總覽儀表板</button>
-        <button type="button" id="tab-inventory" onclick="switchTab('inventory')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">🎴 卡牌資產庫</button>
-        <button type="button" id="tab-pools" onclick="switchTab('pools')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">🎰 福袋 POOL 管理</button>
-        <button type="button" id="tab-trade" onclick="switchTab('trade')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">🔄 Trade Card 管理</button>
-        <button type="button" id="tab-ledger" onclick="switchTab('ledger')" class="tab-btn shrink-0 rounded-lg px-3.5 py-2 text-xs font-extrabold transition">🧾 交易流水紀錄</button>
-      </nav>
-    </div>
-  </header>
 
-  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-    <section id="view-dashboard" class="hidden space-y-6">
-      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="panel p-5">
-          <div class="text-xs font-semibold text-slate-400">累計總營業額 (HK$)</div>
-          <div id="kpiTotalRev" class="num mt-1.5 font-mono text-2xl font-black text-white">HK$ 0</div>
-          <div class="mt-1 text-[11px] text-slate-500">Trading 成交額 ＋ 福袋 POOL 抽獎流水</div>
-        </div>
-        <div class="panel p-5">
-          <div class="text-xs font-semibold text-slate-400">總成本與抽佣支出 (HK$)</div>
-          <div id="kpiTotalCostComm" class="num mt-1.5 font-mono text-2xl font-black text-rose-400">HK$ 0</div>
-          <div id="kpiMonthlyRentSub" class="num mt-1 font-mono text-[11px] text-slate-400">場地月均固定租金 HK$ 0</div>
-        </div>
-        <div class="panel p-5">
-          <div class="text-xs font-semibold text-slate-400">累計總淨利潤 / ROI%</div>
-          <div id="kpiTotalProfit" class="num mt-1.5 font-mono text-2xl font-black text-emerald-400">+HK$ 0</div>
-          <div id="kpiTotalMargin" class="num mt-1 font-mono text-xs font-bold text-emerald-400">綜合回報率 0.0%</div>
-        </div>
-        <div class="panel p-5">
-          <div class="text-xs font-semibold text-slate-400">總在庫資產估算市值 (HK$)</div>
-          <div id="kpiStockMarket" class="num mt-1.5 font-mono text-2xl font-black text-purple-400">HK$ 0</div>
-          <div id="kpiStockCount" class="num mt-1 font-mono text-[11px] text-slate-400">總成本 HK$ 0 · 0 張在庫</div>
-        </div>
-      </div>
+已選 0 張｜原價合計 HK$ 0
+取消 ✅ 確認補放入 POOL
+777
+LUCKY 777 BIZ PRO
+v3.9.5 雙業務管理系統 · IndexedDB
+香港 Pokémon TCG · Trading 散卡買賣 × 福袋 POOL 全流程經營系統
+💾 備份 JSON 📂 還原 🧹 清空示範數據 🔑 修改密碼 🔒 鎖定登出
+📊 總覽儀表板 🎴 卡牌資產庫 🎰 福袋 POOL 管理 🔄 Trade Card 管理 🧾 交易流水紀錄
+累計總營業額 (HK$)
+HK$ 0
+Trading 成交額 ＋ 福袋 POOL 抽獎流水
+總成本與抽佣支出 (HK$)
+HK$ 0
+場地月均固定租金 HK$ 0
+累計總淨利潤 / ROI%
++HK$ 0
+綜合回報率 0.0%
+總在庫資產估算市值 (HK$)
+HK$ 0
+總成本 HK$ 0 · 0 張在庫
+📊 雙業務佔比分析：🔄 Trading 散卡買賣 vs 🎰 福袋 POOL
+一眼睇清兩邊業務分別佔咗幾多成營業額同淨利潤。
+Trading 散卡買賣 福袋 POOL
+營業額佔比 (%)
+Trading 0% | POOL 0%
 
-      <!-- 💵 公司實時可用現金流監控（分離數期未到賬資金） -->
-      <div class="panel border-emerald-500/35 bg-gradient-to-br from-emerald-500/[0.06] via-cardbg to-gold-500/[0.04] p-5 sm:p-6">
-        <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
-          <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <h2 class="text-base font-extrabold text-white">💵 公司實時可用現金流監控（收卡營運資金池）</h2>
-              <span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-emerald-300">自動扣除數期未過數</span>
-            </div>
-            <p class="mt-0.5 text-xs text-slate-400">已扣除入庫收卡、客回卡及已付支出；需要 7–14 日數期過數的場地（如大圍）會先列入「待到賬」，確認過數後才計入可用現金。</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2 rounded-xl border border-borderline bg-obsidian px-3.5 py-2 text-xs">
-            <span class="font-bold text-slate-300">💰 初始營運本金 (HK$)：</span>
-            <input id="openingCashInput" type="number" step="any" value="0" onchange="updateOpeningCash(this.value)" class="v-input-emerald num w-28 px-2.5 py-1 text-right font-mono text-xs font-black" />
-          </div>
-        </div>
 
-        <div class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div class="rounded-2xl border-2 border-emerald-500/50 bg-obsidian p-5 shadow-lg shadow-emerald-500/10">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-emerald-400">💵 現在公司可用現金 (可即時收卡)</span>
-              <span class="rounded bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-300">已到賬實錢</span>
-            </div>
-            <div id="cashAvailableNow" class="num mt-2 font-mono text-3xl font-black text-emerald-400">HK$ 0</div>
-            <div id="cashAvailableBreakdown" class="num mt-2 space-y-0.5 font-mono text-[11px] text-slate-400">
-              <div>已到賬現金流入 HK$ 0 − 實際現金支出 HK$ 0</div>
-            </div>
-          </div>
+淨利潤貢獻佔比 (%)
+Trading 0% | POOL 0%
 
-          <div class="rounded-2xl border border-gold-500/45 bg-obsidian p-5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-gold-400">⏳ 格仔舖數期未到賬 (待過數)</span>
-              <span class="rounded bg-gold-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-gold-300">7–14日數期</span>
-            </div>
-            <div id="cashPendingPool" class="num mt-2 font-mono text-3xl font-black text-gold-400">HK$ 0</div>
-            <div id="cashPendingSub" class="num mt-2 font-mono text-[11px] text-slate-400">來自 0 個待過數 POOL（未計入上方可用現金）</div>
-          </div>
 
-          <div class="rounded-2xl border border-purple-500/35 bg-obsidian p-5">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-extrabold text-purple-300">🏦 總資金池（可用 ＋ 數期尾數）</span>
-              <span class="rounded bg-purple-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-purple-300">全盤現金視圖</span>
-            </div>
-            <div id="cashTotalCombined" class="num mt-2 font-mono text-3xl font-black text-white">HK$ 0</div>
-            <div id="cashImmediatePoolSub" class="num mt-2 font-mono text-[11px] text-slate-400">⚡ 即日找數場地已入賬流水：HK$ 0</div>
-          </div>
-        </div>
+🔄 Trading 散卡買賣
+前往管理 →
+Trading 營業額
+HK$ 0
+佔 0%
+Trading 淨利潤
++HK$ 0
+佔 0%
+成交宗數
+0 宗
+平均每宗淨利
+HK$ 0
+🎰 福袋 POOL 業務
+前往管理 →
+POOL 總流水營收
+HK$ 0
+佔 0%
+POOL 總淨利潤
++HK$ 0
+佔 0%
+📍 各場地累計盈虧表現
 
-        <div class="mt-4 rounded-xl border border-borderline bg-obsidian/80 p-3.5">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <span class="text-xs font-extrabold text-slate-200">🧾 各福袋 POOL 場地過數狀態（點選切換「已過數到賬」即撥入可用現金）</span>
-            <span class="text-[11px] text-slate-400">預設：石門潮格＝即日找數｜大圍＝7–14日數期</span>
-          </div>
-          <div id="poolCashSettlementList" class="mt-2.5 grid grid-cols-1 gap-2 md:grid-cols-2"></div>
-        </div>
-      </div>
+👤 員工佣金待結算彙總表
+逐個 POOL 獨立核算
+按每一個 POOL 的實際抽獎流水 × 該期員工佣金 % 獨立計算，分開列出「已完結埋數應出佣金」與「進行中暫計佣金」，支援逐期標記已出糧。
+全場未出糧應結算：HK$ 0
+前往 POOL 管理 →
 
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-4">
-          <div>
-            <h2 class="text-base font-extrabold text-white">📊 雙業務佔比分析：🔄 Trading 散卡買賣 vs 🎰 福袋 POOL</h2>
-            <p class="mt-0.5 text-xs text-slate-400">一眼睇清兩邊業務分別佔咗幾多成營業額同淨利潤。</p>
-          </div>
-          <div class="flex items-center gap-4 text-xs font-bold">
-            <span class="flex items-center gap-1.5 text-emerald-400"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Trading 散卡買賣</span>
-            <span class="flex items-center gap-1.5 text-purple-400"><span class="h-2.5 w-2.5 rounded-full bg-purple-500"></span> 福袋 POOL</span>
-          </div>
-        </div>
-        <div class="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div class="rounded-xl border border-borderline bg-obsidian p-4">
-            <div class="flex items-center justify-between text-xs font-bold">
-              <span class="text-slate-300">營業額佔比 (%)</span>
-              <div class="num flex items-center gap-2.5 font-mono">
-                <span id="barRevTradeLabel" class="text-emerald-400">Trading 0%</span>
-                <span class="text-slate-600">|</span>
-                <span id="barRevPoolLabel" class="text-purple-400">POOL 0%</span>
-              </div>
-            </div>
-            <div class="mt-3 flex h-3.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div id="barRevTrade" class="h-full bg-emerald-500 transition-all duration-500" style="width: 50%"></div>
-              <div id="barRevPool" class="h-full bg-purple-500 transition-all duration-500" style="width: 50%"></div>
-            </div>
-          </div>
-          <div class="rounded-xl border border-borderline bg-obsidian p-4">
-            <div class="flex items-center justify-between text-xs font-bold">
-              <span class="text-slate-300">淨利潤貢獻佔比 (%)</span>
-              <div class="num flex items-center gap-2.5 font-mono">
-                <span id="barProfitTradeLabel" class="text-emerald-400">Trading 0%</span>
-                <span class="text-slate-600">|</span>
-                <span id="barProfitPoolLabel" class="text-purple-400">POOL 0%</span>
-              </div>
-            </div>
-            <div class="mt-3 flex h-3.5 w-full overflow-hidden rounded-full bg-white/10">
-              <div id="barProfitTrade" class="h-full bg-emerald-500 transition-all duration-500" style="width: 50%"></div>
-              <div id="barProfitPool" class="h-full bg-purple-500 transition-all duration-500" style="width: 50%"></div>
-            </div>
-          </div>
-        </div>
-        <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div class="rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/[0.07] to-obsidian p-5">
-            <div class="flex items-center justify-between border-b border-borderline pb-3">
-              <h3 class="text-sm font-black text-emerald-400">🔄 Trading 散卡買賣</h3>
-              <button type="button" onclick="switchTab('trade')" class="text-[11px] font-bold text-emerald-300 hover:underline">前往管理 →</button>
-            </div>
-            <div class="mt-4 grid grid-cols-2 gap-3">
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">Trading 營業額</div><div id="dashTradeRev" class="num mt-1 font-mono text-lg font-black text-white">HK$ 0</div><div id="dashTradeRevPct" class="num mt-0.5 font-mono text-[11px] font-bold text-emerald-400">佔 0%</div></div>
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">Trading 淨利潤</div><div id="dashTradeProfit" class="num mt-1 font-mono text-lg font-black text-emerald-400">+HK$ 0</div><div id="dashTradeProfitPct" class="num mt-0.5 font-mono text-[11px] font-bold text-emerald-300">佔 0%</div></div>
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">成交宗數</div><div id="dashTradeCount" class="num mt-1 font-mono text-base font-black text-white">0 宗</div></div>
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">平均每宗淨利</div><div id="dashTradeAvg" class="num mt-1 font-mono text-base font-black text-emerald-300">HK$ 0</div></div>
-            </div>
-          </div>
-          <div class="rounded-2xl border border-purple-500/25 bg-gradient-to-br from-purple-500/[0.08] to-obsidian p-5">
-            <div class="flex items-center justify-between border-b border-borderline pb-3">
-              <h3 class="text-sm font-black text-purple-400">🎰 福袋 POOL 業務</h3>
-              <button type="button" onclick="switchTab('pools')" class="text-[11px] font-bold text-purple-300 hover:underline">前往管理 →</button>
-            </div>
-            <div class="mt-4 grid grid-cols-2 gap-3">
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">POOL 總流水營收</div><div id="dashPoolRev" class="num mt-1 font-mono text-lg font-black text-white">HK$ 0</div><div id="dashPoolRevPct" class="num mt-0.5 font-mono text-[11px] font-bold text-purple-400">佔 0%</div></div>
-              <div class="rounded-xl border border-borderline bg-cardbg p-3.5"><div class="text-[11px] text-slate-400">POOL 總淨利潤</div><div id="dashPoolProfit" class="num mt-1 font-mono text-lg font-black text-emerald-400">+HK$ 0</div><div id="dashPoolProfitPct" class="num mt-0.5 font-mono text-[11px] font-bold text-purple-300">佔 0%</div></div>
-            </div>
-            <div class="mt-4"><div class="mb-2 text-[11px] font-bold text-slate-400">📍 各場地累計盈虧表現</div><div id="dashVenueSummary" class="space-y-2"></div></div>
-          </div>
-        </div>
-      </div>
+🧭 卡牌資產流向狀態（我啲卡去咗邊？）
+兩邊業務共用資產庫，點擊任一卡片即時篩選查看。
+前往卡牌資產庫 →
+🟢 在庫中
+0 張
+總成本 HK$ 0
+🎰 已放指定 POOL
+0 張
+總成本 HK$ 0
+🔄 Trading 售出
+0 張
+總成本 HK$ 0
+📦 POOL 客領取損耗
+0 張
+損耗成本 HK$ 0
+♻️ 客回卡重返庫存
+0 次
+回卡現金 HK$ 0
+➕ 購入新卡入庫登記
+Trading 與福袋 POOL 共用卡牌源頭，入庫自動記入交易流水（買入支出）。
+卡牌編號
+評級
+                PSA 10
+                PSA 9
+                BGS 9.5
+                裸卡
+                其他
+              
+入庫數量
+每張買入成本 (HK$)
+每張當下市價 (HK$)
+上傳卡片圖片
+🖼️
+點擊上傳、拖放圖片，或直接按 ⌘V / Ctrl+V 貼上截圖
+雙重智能壓圖（長邊上限 640px · ~50KB WebP/JPEG）× IndexedDB 超大容量儲存
+清除
+來源 / 備註
+清空表單 + 登記入庫
+📦 卡牌資產庫清單
 
-      <div id="staffCommissionSection" class="panel p-5 sm:p-6">
-        <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
-          <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <h2 class="text-base font-extrabold text-white">👤 員工佣金待結算彙總表</h2>
-              <span class="rounded-md border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-extrabold text-emerald-300">逐個 POOL 獨立核算</span>
-            </div>
-            <p class="mt-0.5 text-xs text-slate-400">按每一個 POOL 的實際抽獎流水 × 該期員工佣金 % 獨立計算，分開列出「已完結埋數應出佣金」與「進行中暫計佣金」，支援逐期標記已出糧。</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <div class="num rounded-xl border border-gold-500/35 bg-gold-500/10 px-3.5 py-2 font-mono text-xs font-black text-gold-400">全場未出糧應結算：<span id="staffTotalUnpaidBadge" class="text-white">HK$ 0</span></div>
-            <button type="button" onclick="switchTab('pools')" class="rounded-xl border border-borderline bg-obsidian px-3 py-2 text-xs font-bold text-slate-300 hover:border-purple-500/60 hover:text-white">前往 POOL 管理 →</button>
-          </div>
-        </div>
-        <div id="staffCommissionContainer" class="mt-4 space-y-4"></div>
-      </div>
 
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-3.5">
-          <div><h2 class="text-base font-extrabold text-white">🧭 卡牌資產流向狀態（我啲卡去咗邊？）</h2><p class="mt-0.5 text-xs text-slate-400">兩邊業務共用資產庫，點擊任一卡片即時篩選查看。</p></div>
-          <button type="button" onclick="switchTab('inventory')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">前往卡牌資產庫 →</button>
-        </div>
-        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          <button type="button" onclick="jumpToInventoryFilter('在庫中')" class="rounded-xl border border-emerald-500/30 bg-obsidian p-4 text-left transition hover:border-emerald-400"><div class="text-xs font-bold text-emerald-400">🟢 在庫中</div><div id="flowInStockCount" class="num mt-2 font-mono text-xl font-black text-white">0 張</div><div id="flowInStockCost" class="num mt-0.5 font-mono text-[11px] text-slate-400">總成本 HK$ 0</div></button>
-          <button type="button" onclick="jumpToInventoryFilter('已放 POOL')" class="rounded-xl border border-purple-500/30 bg-obsidian p-4 text-left transition hover:border-purple-400"><div class="text-xs font-bold text-purple-400">🎰 已放指定 POOL</div><div id="flowInPoolCount" class="num mt-2 font-mono text-xl font-black text-white">0 張</div><div id="flowInPoolCost" class="num mt-0.5 font-mono text-[11px] text-slate-400">總成本 HK$ 0</div></button>
-          <button type="button" onclick="jumpToInventoryFilter('Trading 售出')" class="rounded-xl border border-sky-500/30 bg-obsidian p-4 text-left transition hover:border-sky-400"><div class="text-xs font-bold text-sky-400">🔄 Trading 售出</div><div id="flowTradeOutCount" class="num mt-2 font-mono text-xl font-black text-white">0 張</div><div id="flowTradeOutCost" class="num mt-0.5 font-mono text-[11px] text-slate-400">總成本 HK$ 0</div></button>
-          <button type="button" onclick="jumpToInventoryFilter('POOL 客領取')" class="rounded-xl border border-gold-500/30 bg-obsidian p-4 text-left transition hover:border-gold-400"><div class="text-xs font-bold text-gold-400">📦 POOL 客領取損耗</div><div id="flowTakenCount" class="num mt-2 font-mono text-xl font-black text-white">0 張</div><div id="flowTakenCost" class="num mt-0.5 font-mono text-[11px] text-slate-400">損耗成本 HK$ 0</div></button>
-          <button type="button" onclick="jumpToInventoryFilter('在庫中')" class="col-span-2 rounded-xl border border-amber-400/35 bg-obsidian p-4 text-left transition hover:border-amber-300 sm:col-span-1"><div class="text-xs font-bold text-amber-300">♻️ 客回卡重返庫存</div><div id="flowBuybackCount" class="num mt-2 font-mono text-xl font-black text-white">0 次</div><div id="flowBuybackCash" class="num mt-0.5 font-mono text-[11px] text-slate-400">回卡現金 HK$ 0</div></button>
-        </div>
-      </div>
-    </section>
 
-    <section id="view-inventory" class="hidden space-y-6">
-      <div class="panel p-5 sm:p-6">
-        <div class="border-b border-borderline pb-3.5"><h2 class="text-base font-extrabold text-white">➕ 購入新卡入庫登記</h2><p class="mt-0.5 text-xs text-slate-400">Trading 與福袋 POOL 共用卡牌源頭，入庫自動記入交易流水（買入支出）。</p></div>
-        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
-          <div class="md:col-span-3"><label for="intakeNumber" class="mb-1.5 block text-xs font-semibold text-slate-300">卡牌編號</label><input id="intakeNumber" type="text" placeholder="例如：227/S-P、057/072" class="v-input w-full px-3.5 py-2.5 font-mono text-sm font-bold placeholder-slate-500" /></div>
-          <div class="grid grid-cols-2 gap-2.5 md:col-span-3">
-            <div><label for="intakeGrade" class="mb-1.5 block text-xs font-semibold text-slate-300">評級</label><select id="intakeGrade" class="v-input w-full px-2.5 py-2.5 text-sm font-bold"><option value="PSA 10">PSA 10</option><option value="PSA 9">PSA 9</option><option value="BGS 9.5">BGS 9.5</option><option value="裸卡">裸卡</option><option value="其他">其他</option></select></div>
-            <div><label for="intakeQty" class="mb-1.5 block text-xs font-semibold text-gold-400">入庫數量</label><input id="intakeQty" type="number" min="1" step="1" value="1" class="v-input-gold num w-full px-2.5 py-2.5 text-center font-mono text-sm font-black" /></div>
-          </div>
-          <div class="md:col-span-3"><label for="intakeCost" class="mb-1.5 block text-xs font-semibold text-emerald-400">每張買入成本 (HK$)</label><input id="intakeCost" type="number" min="0" step="any" placeholder="0" class="v-input-emerald num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-emerald-500/40" /></div>
-          <div class="md:col-span-3"><label for="intakeMarket" class="mb-1.5 block text-xs font-semibold text-purple-400">每張當下市價 (HK$)</label><input id="intakeMarket" type="number" min="0" step="any" placeholder="0" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-extrabold placeholder-purple-400/40" /></div>
-          <div class="md:col-span-6">
-            <label class="mb-1.5 block text-xs font-semibold text-slate-300">上傳卡片圖片</label>
-            <div id="intakeDropzone" onclick="document.getElementById('intakeImgFile').click()" ondragover="handleDragOver(event, 'intakeDropzone')" ondragleave="handleDragLeave(event, 'intakeDropzone')" ondrop="handleDrop(event, 'intake', 'intakeDropzone')" class="flex min-h-[84px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-borderline bg-inputbg px-4 py-3 transition hover:border-emerald-400/60">
-              <div class="flex items-center gap-3">
-                <img id="intakeImgPreview" src="" alt="卡片預覽" class="hidden h-16 w-12 shrink-0 rounded-lg border border-borderline object-cover" />
-                <div id="intakeImgPlaceholder" class="flex h-14 w-11 shrink-0 items-center justify-center rounded-lg border border-borderline bg-cardbg text-lg">🖼️</div>
-                <div><div class="text-xs font-bold text-slate-200">點擊上傳、拖放圖片，或直接按 <span class="font-mono text-emerald-400">⌘V / Ctrl+V</span> 貼上截圖</div><div class="mt-0.5 text-[11px] text-slate-500">雙重智能壓圖（長邊上限 640px · ~50KB WebP/JPEG）× IndexedDB 超大容量儲存</div></div>
-              </div>
-              <button type="button" id="intakeClearImgBtn" onclick="event.stopPropagation(); clearTempImage('intake')" class="hidden shrink-0 rounded-lg border border-borderline bg-white/5 px-2.5 py-1.5 text-[11px] font-bold text-slate-300 hover:text-rose-400">清除</button>
-            </div>
-          </div>
-          <div class="flex flex-col justify-between md:col-span-6">
-            <div><label for="intakeNotes" class="mb-1.5 block text-xs font-semibold text-slate-300">來源 / 備註</label><input id="intakeNotes" type="text" placeholder="例如：日版批發 / 門市收卡 / 見返り美人皮卡丘" class="v-input w-full px-3.5 py-2.5 text-sm placeholder-slate-500" /></div>
-            <div class="mt-4 flex items-center justify-end gap-2.5">
-              <button type="button" onclick="clearIntakeForm()" class="rounded-xl border border-borderline bg-obsidian px-5 py-2.5 text-xs font-bold text-slate-300 hover:bg-white/5">清空表單</button>
-              <button type="button" onclick="registerNewCard()" class="rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-black text-obsidian shadow-lg shadow-emerald-500/20 hover:bg-emerald-400">+ 登記入庫</button>
-            </div>
-          </div>
-        </div>
-      </div>
+🏢 場地與固定租金管理 共 3 個場地 · 月均租金 HK$ 0
+👤 員工佣金結算表 → 展開設定 ▼
 
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-col justify-between gap-3 border-b border-borderline pb-4 lg:flex-row lg:items-center">
-          <div><h2 class="text-base font-extrabold text-white">📦 卡牌資產庫清單</h2><div id="invFilterBar" class="mt-2.5 flex flex-wrap items-center gap-1.5"></div></div>
-          <div class="w-full lg:w-72"><input id="invSearchInput" type="text" oninput="renderInventory()" placeholder="🔍 搜尋卡牌編號、評級或備註..." class="v-input w-full px-3.5 py-2 text-xs placeholder-slate-500" /></div>
-        </div>
-        <div id="inventoryListContainer" class="mt-4 space-y-3"></div>
-      </div>
-    </section>
++ 新增場地與固定租金
 
-    <section id="view-pools" class="space-y-5">
-      <div class="panel p-4">
-        <div onclick="toggleVenueDrawer()" class="flex cursor-pointer flex-wrap items-center justify-between gap-2">
-          <div class="flex flex-wrap items-center gap-2.5">
-            <span class="text-sm font-black text-white">🏢 場地與固定租金管理</span>
-            <span id="venueDrawerSummaryBadge" class="num rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-bold text-emerald-300">共 4 個場地 · 月均租金 HK$ 0</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <button type="button" onclick="event.stopPropagation(); jumpToStaffCommissionSummary()" class="rounded-lg border border-gold-500/40 bg-gold-500/15 px-3 py-1.5 text-xs font-extrabold text-gold-400 hover:bg-gold-500/25">👤 員工佣金結算表 →</button>
-            <button type="button" id="venueDrawerToggleBtn" class="rounded-lg border border-borderline bg-obsidian px-3 py-1.5 text-xs font-bold text-slate-300 hover:border-purple-500/60 hover:text-white">展開設定 ▼</button>
-          </div>
-        </div>
 
-        <div id="venueDrawerBody" class="mt-4 hidden space-y-4 border-t border-borderline pt-4">
-          <div id="venueListContainer" class="space-y-2.5"></div>
-          <div class="rounded-xl border border-purple-500/30 bg-obsidian p-3.5">
-            <div class="mb-2.5 text-xs font-extrabold text-purple-300">+ 新增場地與固定租金 / 數期設定</div>
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-12">
-              <div class="sm:col-span-3"><input id="newVenueName" type="text" placeholder="場地名稱（如：旺角兆萬 B12）" class="v-input w-full px-3 py-2 text-xs font-bold" /></div>
-              <div class="sm:col-span-2"><input id="newVenueRent" type="number" min="0" step="any" placeholder="固定租金 (HK$)" class="v-input-emerald num w-full px-3 py-2 font-mono text-xs font-bold" /></div>
-              <div class="sm:col-span-2">
-                <select id="newVenueCycle" onchange="toggleNewVenueCustomCycle()" class="v-input-purple w-full px-2.5 py-2 text-xs font-bold">
-                  <option value="1">1個月</option><option value="3">3個月</option><option value="6">6個月</option><option value="12">12個月</option><option value="custom">自訂月數</option>
-                </select>
-              </div>
-              <div id="newVenueCustomWrap" class="hidden sm:col-span-1"><input id="newVenueCustomMonths" type="number" min="1" value="2" class="v-input-purple num w-full px-2 py-2 text-center font-mono text-xs font-bold" /></div>
-              <div class="sm:col-span-2">
-                <select id="newVenueSettlementType" class="v-input-gold w-full px-2.5 py-2 text-xs font-bold">
-                  <option value="instant">⚡ 即日找數</option><option value="delayed">⏳ 數期 7–14 日過數</option>
-                </select>
-              </div>
-              <div class="sm:col-span-2"><button type="button" onclick="addVenueFromDrawer()" class="w-full rounded-xl bg-purple-600 px-3 py-2 text-xs font-black text-white hover:bg-purple-500">+ 新增場地</button></div>
-            </div>
-          </div>
-        </div>
-      </div>
+                  1個月
+                  3個月
+                  6個月
+                  12個月
+                  自訂月數
+                
 
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-4">
-          <div><h2 class="text-base font-extrabold text-white">✨ 開立新福袋 POOL</h2><p class="mt-0.5 text-xs text-slate-400">點選場地、設定抽數與優惠價、自訂抽佣，並從資產庫挑選獎品卡上架。</p></div>
-          <button type="button" id="createPoolToggleBtn" onclick="toggleCreatePoolForm()" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:border-purple-500/60 hover:text-white">收合 ▲</button>
-        </div>
++ 新增場地
+✨ 開立新福袋 POOL
+點選場地、設定抽數與優惠價、自訂抽佣，並從資產庫挑選獎品卡上架。
+收合 ▲
+場地與基本資料
 
-        <div id="createPoolBody" class="mt-5 space-y-5">
-          <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
-            <h3 class="text-sm font-extrabold text-white">場地與基本資料</h3>
-            <div id="cpVenuePills" class="mt-3 flex flex-wrap items-center gap-2"></div>
-            <div id="cpQuickAddVenueRow" class="mt-3 hidden flex-wrap items-center gap-2 rounded-xl border border-purple-500/40 bg-cardbg p-3">
-              <input id="cpQuickVenueName" type="text" placeholder="輸入新場地名稱..." class="v-input flex-1 px-3 py-2 text-xs font-bold" />
-              <input id="cpQuickVenueRent" type="number" min="0" step="any" placeholder="固定租金 (選填)" class="v-input-emerald num w-36 px-3 py-2 font-mono text-xs font-bold" />
-              <button type="button" onclick="confirmQuickAddVenue()" class="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian hover:bg-emerald-400">確認新增</button>
-              <button type="button" onclick="toggleQuickAddVenue(false)" class="rounded-lg border border-borderline bg-obsidian px-3 py-2 text-xs font-bold text-slate-400 hover:text-white">取消</button>
-            </div>
-            <div class="mt-3.5"><label for="cpName" class="mb-1.5 block text-xs font-semibold text-slate-300">POOL 名稱 / 期數</label><input id="cpName" type="text" placeholder="例如：第 15 期 皮卡丘狂歡池" class="v-input w-full px-3.5 py-2.5 text-sm font-bold placeholder-slate-500" /></div>
-          </div>
+確認新增 取消
+POOL 名稱 / 期數
+抽數與定價設定
+總抽數
+優惠抽數
+優惠每抽售價 (HK$)
+正價抽數
+正價每抽售價 (HK$)
+滿抽預計總營收：HK$ 10,200 平均每抽單價：HK$ 102.0
+抽佣設定 (選填)
+🏪 店舖抽佣 (按總流水計算)
+%
+👤 員工佣金 (按總流水計算)
+%
+從卡牌資產庫挑選獎品卡
+在庫可選：0 張
 
-          <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
-            <h3 class="text-sm font-extrabold text-white">抽數與定價設定</h3>
-            <div class="mt-3.5 space-y-3.5">
-              <div class="max-w-xs"><label for="cpTotalDraws" class="mb-1.5 block text-xs font-bold text-white">總抽數</label><input id="cpTotalDraws" type="number" min="1" value="100" oninput="onDrawSettingInput('total')" class="v-input num w-full px-3.5 py-2.5 font-mono text-base font-black" /></div>
-              <div class="grid grid-cols-1 gap-3.5 rounded-xl border border-gold-500/25 bg-gold-500/[0.04] p-3.5 sm:grid-cols-2">
-                <div><label for="cpPromoDraws" class="mb-1.5 block text-xs font-bold text-gold-400">優惠抽數</label><input id="cpPromoDraws" type="number" min="0" value="30" oninput="onDrawSettingInput('promo')" class="v-input-gold num w-full px-3.5 py-2.5 font-mono text-sm font-black" /></div>
-                <div><label for="cpPromoPrice" class="mb-1.5 block text-xs font-bold text-gold-400">優惠每抽售價 (HK$)</label><input id="cpPromoPrice" type="number" min="0" step="any" value="88" oninput="recalcCreatePoolSummary()" class="v-input-gold num w-full px-3.5 py-2.5 font-mono text-sm font-black" /></div>
-              </div>
-              <div class="grid grid-cols-1 gap-3.5 rounded-xl border border-purple-500/25 bg-purple-500/[0.04] p-3.5 sm:grid-cols-2">
-                <div><label for="cpRegularDraws" class="mb-1.5 block text-xs font-bold text-purple-400">正價抽數</label><input id="cpRegularDraws" type="number" min="0" value="70" oninput="onDrawSettingInput('regular')" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-black" /></div>
-                <div><label for="cpRegularPrice" class="mb-1.5 block text-xs font-bold text-purple-400">正價每抽售價 (HK$)</label><input id="cpRegularPrice" type="number" min="0" step="any" value="108" oninput="recalcCreatePoolSummary()" class="v-input-purple num w-full px-3.5 py-2.5 font-mono text-sm font-black" /></div>
-              </div>
-              <div id="cpPricingSummaryBar" class="num flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 font-mono text-xs font-bold text-emerald-200">
-                <span>滿抽預計總營收：<strong class="text-white">HK$ 10,200</strong></span>
-                <span>平均每抽單價：<strong class="text-gold-400">HK$ 102.0</strong></span>
-              </div>
-            </div>
-          </div>
 
-          <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
-            <h3 class="text-sm font-extrabold text-white">抽佣設定 (選填)</h3>
-            <div class="mt-3.5 grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-              <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-borderline bg-cardbg p-3.5">
-                <label class="flex cursor-pointer items-center gap-2 text-xs font-bold text-slate-200"><input id="cpStoreCommToggle" type="checkbox" onchange="toggleCpCommInputs()" class="h-4 w-4 accent-purple-500" /><span>🏪 店舖抽佣</span><span class="text-[11px] font-normal text-slate-400">(按總流水計算)</span></label>
-                <div id="cpStoreCommWrap" class="flex items-center gap-1.5 opacity-40"><input id="cpStoreCommPct" type="number" min="0" max="100" step="0.5" value="5" oninput="recalcCreatePoolSummary()" class="v-input-purple num w-16 px-2 py-1 text-center font-mono text-xs font-black" /><span class="font-mono text-xs font-bold text-purple-400">%</span></div>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-borderline bg-cardbg p-3.5">
-                <label class="flex cursor-pointer items-center gap-2 text-xs font-bold text-slate-200"><input id="cpStaffCommToggle" type="checkbox" onchange="toggleCpCommInputs()" class="h-4 w-4 accent-emerald-500" /><span>👤 員工佣金</span><span class="text-[11px] font-normal text-slate-400">(按總流水計算)</span></label>
-                <div id="cpStaffCommWrap" class="flex flex-wrap items-center gap-1.5 opacity-40"><input id="cpStaffName" type="text" placeholder="員工姓名" class="v-input w-24 px-2.5 py-1 text-xs font-semibold" /><input id="cpStaffCommPct" type="number" min="0" max="100" step="0.5" value="5" oninput="recalcCreatePoolSummary()" class="v-input-emerald num w-16 px-2 py-1 text-center font-mono text-xs font-black" /><span class="font-mono text-xs font-bold text-emerald-400">%</span></div>
-              </div>
-            </div>
-          </div>
 
-          <div class="rounded-2xl border border-borderline bg-obsidian/70 p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-sm font-extrabold text-white">從卡牌資產庫挑選獎品卡</h3>
-              <span id="cpAvailableCount" class="num rounded-lg border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 font-mono text-[11px] font-bold text-emerald-300">在庫可選：0 張</span>
-            </div>
-            <div class="mt-3.5 flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
-              <div class="w-full lg:w-72"><input id="cpCardSearch" type="text" oninput="renderCreatePoolPicker()" placeholder="🔍 搜尋卡牌編號或備註..." class="v-input w-full px-3.5 py-2 text-xs placeholder-slate-500" /></div>
-              <div id="cpGradeChips" class="flex flex-wrap items-center gap-1.5"></div>
-            </div>
-            <div id="cpVisualGrid" class="mt-3.5 grid max-h-72 grid-cols-2 gap-3 overflow-y-auto rounded-xl border border-borderline bg-obsidian p-3 sm:grid-cols-3 lg:grid-cols-4"></div>
-            <div class="mt-4 rounded-xl border border-emerald-500/30 bg-cardbg p-4">
-              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-borderline pb-3">
-                <h4 class="text-xs font-black text-emerald-400">🛒 已選入本 POOL 獎品清單</h4>
-                <div id="cpCartMetrics" class="num flex flex-wrap items-center gap-3 font-mono text-xs font-bold text-slate-200"><span>已選 <strong class="text-purple-400">0</strong> 張</span><span>｜投入卡牌總成本 <strong class="text-emerald-400">HK$ 0</strong></span><span>｜推算回本抽數 <strong class="text-gold-400">0 抽</strong></span></div>
-              </div>
-              <div id="cpSelectedCartList" class="mt-3 space-y-2"></div>
-            </div>
-            <div class="mt-5 flex justify-end"><button type="button" onclick="confirmCreatePool()" class="w-full rounded-xl bg-gradient-to-r from-purple-600 to-emerald-500 px-6 py-3.5 text-sm font-black text-white shadow-lg shadow-purple-600/25 transition hover:opacity-95 sm:w-auto">🚀 正式開立福袋 POOL</button></div>
-          </div>
-        </div>
-      </div>
+🛒 已選入本 POOL 獎品清單
+已選 0 張 ｜投入卡牌總成本 HK$ 0 ｜推算回本抽數 0 抽
 
-      <div class="flex flex-col justify-between gap-3 rounded-2xl border border-borderline bg-cardbg p-3.5 lg:flex-row lg:items-center">
-        <div class="flex flex-wrap items-center gap-1.5">
-          <button type="button" id="poolSfActive" onclick="setPoolStatusFilter('active')" class="rounded-xl bg-emerald-500 px-3.5 py-1.5 text-xs font-black text-obsidian transition">🟢 進行中</button>
-          <button type="button" id="poolSfCompleted" onclick="setPoolStatusFilter('completed')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">🏁 已完結埋數</button>
-          <button type="button" id="poolSfAll" onclick="setPoolStatusFilter('ALL')" class="rounded-xl border border-borderline bg-obsidian px-3.5 py-1.5 text-xs font-bold text-slate-400 hover:text-white transition">全部狀態</button>
-        </div>
-        <div id="poolVenueFilterPills" class="flex flex-wrap items-center gap-1.5"></div>
-      </div>
+🚀 正式開立福袋 POOL
+🟢 進行中 🏁 已完結埋數 全部狀態
 
-      <div id="poolsListContainer" class="space-y-3.5"></div>
-    </section>
 
-    <section id="view-trade" class="hidden space-y-6">
-      <div class="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        <div class="panel p-4 sm:p-5"><div class="text-[11px] font-semibold text-slate-400">Trading 總營業額 (HK$)</div><div id="tradeKpiRev" class="num mt-1.5 font-mono text-xl font-black text-white sm:text-2xl">HK$ 0</div></div>
-        <div class="panel p-4 sm:p-5"><div class="text-[11px] font-semibold text-slate-400">出卡總成本 (HK$)</div><div id="tradeKpiCost" class="num mt-1.5 font-mono text-xl font-black text-slate-300 sm:text-2xl">HK$ 0</div></div>
-        <div class="panel p-4 sm:p-5"><div class="text-[11px] font-semibold text-slate-400">Trading 總淨利潤 (HK$)</div><div id="tradeKpiProfit" class="num mt-1.5 font-mono text-xl font-black text-emerald-400 sm:text-2xl">+HK$ 0</div></div>
-        <div class="panel p-4 sm:p-5"><div class="text-[11px] font-semibold text-slate-400">成交宗數</div><div id="tradeKpiCount" class="num mt-1.5 font-mono text-xl font-black text-purple-400 sm:text-2xl">0 宗</div></div>
-      </div>
+Trading 總營業額 (HK$)
+HK$ 0
+出卡總成本 (HK$)
+HK$ 0
+Trading 總淨利潤 (HK$)
++HK$ 0
+成交宗數
+0 宗
+🔄 新增 Trade Card 交易（源頭：卡牌資產庫）
+選擇在庫卡牌進行散卡出售，或以卡換卡自動將新卡登記入庫。
+💰 散卡出售 🔄 以卡換卡 (補差價)
+搜尋並選擇在庫卡牌
 
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-borderline pb-4">
-          <div><h2 class="text-base font-extrabold text-white">🔄 新增 Trade Card 交易（源頭：卡牌資產庫）</h2><p class="mt-0.5 text-xs text-slate-400">選擇在庫卡牌進行散卡出售，或以卡換卡自動將新卡登記入庫。</p></div>
-          <div class="flex gap-1.5 rounded-xl border border-borderline bg-obsidian p-1">
-            <button type="button" id="tradeModeSaleBtn" onclick="setTradeMode('sale')" class="rounded-lg bg-emerald-500 px-3.5 py-2 text-xs font-black text-obsidian transition">💰 散卡出售</button>
-            <button type="button" id="tradeModeSwapBtn" onclick="setTradeMode('swap')" class="rounded-lg px-3.5 py-2 text-xs font-bold text-slate-400 hover:text-white transition">🔄 以卡換卡 (補差價)</button>
-          </div>
-        </div>
+出售價 (HK$)
+買家 / 備註
+本筆出售預估淨利潤
++HK$ 0
+✅ 確認出售並入帳
+選擇換出的在庫卡牌（我們給出）
 
-        <div id="tradePanelSale" class="mt-5 space-y-4">
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <div class="space-y-2.5 lg:col-span-6">
-              <label for="saleCardSearch" class="block text-xs font-semibold text-slate-300">搜尋並選擇在庫卡牌</label>
-              <input id="saleCardSearch" type="text" oninput="renderTradeSelectOptions()" placeholder="🔍 篩選編號 / 備註..." class="v-input w-full px-3 py-2 text-xs" />
-              <select id="saleCardSelect" onchange="onSaleCardChange()" class="v-input w-full px-3.5 py-2.5 text-sm font-bold"></select>
-              <div id="saleCardPreview" class="hidden items-center gap-3 rounded-xl border border-borderline bg-obsidian p-3"></div>
-            </div>
-            <div class="space-y-3.5 lg:col-span-6">
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div><label for="salePriceInput" class="mb-1.5 block text-xs font-semibold text-emerald-400">出售價 (HK$)</label><input id="salePriceInput" type="number" min="0" step="any" placeholder="0" oninput="previewTradeSaleProfit()" class="v-input-emerald num w-full px-3.5 py-2.5 font-mono text-base font-black" /></div>
-                <div><label for="saleBuyerInput" class="mb-1.5 block text-xs font-semibold text-slate-300">買家 / 備註</label><input id="saleBuyerInput" type="text" placeholder="如：Carousell 旺角交收 / IG 熟客" class="v-input w-full px-3.5 py-2.5 text-sm" /></div>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-                <div><div class="text-[11px] font-semibold text-emerald-300">本筆出售預估淨利潤</div><div id="saleProfitPreview" class="num font-mono text-xl font-black text-emerald-400">+HK$ 0</div></div>
-                <button type="button" onclick="confirmTradeSale()" class="rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-black text-obsidian shadow-lg shadow-emerald-500/20 hover:bg-emerald-400">✅ 確認出售並入帳</button>
-              </div>
-            </div>
-          </div>
-        </div>
+換入新卡資料（自動入庫為「在庫中」）
+換入新卡編號
+評級
+                    PSA 10
+                    PSA 9
+                    BGS 9.5
+                    裸卡
+                    其他
+                  
+估算市價 (HK$)
+現金差價 (HK$，正數=收客人現金 / 負數=我補現金)
+備註（選填）
+本筆換卡帳面淨盈虧（新卡估值 + 差價 − 舊卡成本）
++HK$ 0
+🔄 確認換卡並入庫
+📋 Trading 歷史交易紀錄
 
-        <div id="tradePanelSwap" class="mt-5 hidden space-y-4">
-          <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
-            <div class="space-y-2.5 rounded-xl border border-borderline bg-obsidian p-4 lg:col-span-5">
-              <div class="text-xs font-extrabold text-purple-300">選擇換出的在庫卡牌（我們給出）</div>
-              <input id="swapCardSearch" type="text" oninput="renderTradeSelectOptions()" placeholder="🔍 篩選在庫卡號..." class="v-input w-full px-3 py-2 text-xs" />
-              <select id="swapOutCardSelect" onchange="onSwapOutCardChange()" class="v-input w-full px-3.5 py-2.5 text-sm font-bold"></select>
-              <div id="swapOutCardPreview" class="hidden items-center gap-3 rounded-xl border border-borderline bg-cardbg p-3"></div>
-            </div>
-            <div class="space-y-3.5 rounded-xl border border-borderline bg-obsidian p-4 lg:col-span-7">
-              <div class="text-xs font-extrabold text-emerald-400">換入新卡資料（自動入庫為「在庫中」）</div>
-              <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div class="col-span-2"><label class="mb-1 block text-[11px] font-semibold text-slate-300">換入新卡編號</label><input id="swapInNumber" type="text" placeholder="如：199/165" class="v-input w-full px-3 py-2 font-mono text-xs font-bold" /></div>
-                <div><label class="mb-1 block text-[11px] font-semibold text-slate-300">評級</label><select id="swapInGrade" class="v-input w-full px-2.5 py-2 text-xs font-bold"><option value="PSA 10">PSA 10</option><option value="PSA 9">PSA 9</option><option value="BGS 9.5">BGS 9.5</option><option value="裸卡">裸卡</option><option value="其他">其他</option></select></div>
-                <div><label class="mb-1 block text-[11px] font-semibold text-purple-400">估算市價 (HK$)</label><input id="swapInMarket" type="number" min="0" step="any" placeholder="0" oninput="previewTradeSwap()" class="v-input-purple num w-full px-3 py-2 font-mono text-xs font-bold" /></div>
-              </div>
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div><label class="mb-1 block text-[11px] font-semibold text-gold-400">現金差價 (HK$，正數=收客人現金 / 負數=我補現金)</label><input id="swapCashDiff" type="number" step="any" value="0" oninput="previewTradeSwap()" class="v-input-gold num w-full px-3 py-2 font-mono text-xs font-bold" /></div>
-                <div><label class="mb-1 block text-[11px] font-semibold text-slate-300">備註（選填）</label><input id="swapNotes" type="text" placeholder="如：旺角面交補差價" class="v-input w-full px-3 py-2 text-xs" /></div>
-              </div>
-              <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-500/35 bg-purple-500/10 p-3.5">
-                <div><div class="text-[11px] font-semibold text-purple-300">本筆換卡帳面淨盈虧（新卡估值 + 差價 − 舊卡成本）</div><div id="swapProfitPreview" class="num font-mono text-lg font-black text-emerald-400">+HK$ 0</div></div>
-                <button type="button" onclick="confirmTradeSwap()" class="rounded-xl bg-purple-600 px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-purple-600/20 hover:bg-purple-500">🔄 確認換卡並入庫</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+📌 交易流水資料來源： 本表自動彙總 4 大來源的所有現金流入與流出： 🎴 卡牌資產庫、 🔄 Trade Card、 🎰 福袋 POOL、 ✍️ 手動雜項。
+總現金流入 (HK$)
++HK$ 0
+總現金流出 (HK$)
+-HK$ 0
+淨現金流 (HK$)
+HK$ 0
+✍️ 新增手動雜項收支（格仔舖租金 / 評級費 / 卡套耗材）
+日期
+類型
+              💸 支出 (-)
+              💰 收入 (+)
+            
+分類
+              格仔舖租金
+              評級費
+              卡套耗材
+              其他收支
+            
+金額 (HK$)
+備註
++ 新增紀錄
+🧾 現金流水明細表
+全部來源 🎴 卡牌資產庫 🔄 Trade Card 🎰 福袋 POOL ✍️ 手動雜項
+日期
+來源
+項目摘要
+類型
+金額 (HK$)
+操作
 
-      <div class="panel p-5 sm:p-6">
-        <div class="border-b border-borderline pb-3.5"><h2 class="text-base font-extrabold text-white">📋 Trading 歷史交易紀錄</h2></div>
-        <div id="tradeHistoryContainer" class="mt-4 space-y-2.5"></div>
-      </div>
-    </section>
-
-    <section id="view-ledger" class="hidden space-y-6">
-      <div class="rounded-2xl border border-purple-500/35 bg-gradient-to-r from-purple-500/15 via-cardbg to-emerald-500/15 p-4 text-xs leading-relaxed text-slate-200">
-        <strong class="text-purple-300">📌 交易流水資料來源：</strong>本表自動彙總 4 大來源的所有現金流入與流出：<span class="font-bold text-emerald-400">🎴 卡牌資產庫</span>、<span class="font-bold text-sky-400">🔄 Trade Card</span>、<span class="font-bold text-purple-400">🎰 福袋 POOL</span>、<span class="font-bold text-gold-400">✍️ 手動雜項</span>。
-      </div>
-      <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-        <div class="panel p-5"><div class="text-xs font-semibold text-slate-400">總現金流入 (HK$)</div><div id="ledgerTotalIn" class="num mt-1.5 font-mono text-2xl font-black text-emerald-400">+HK$ 0</div></div>
-        <div class="panel p-5"><div class="text-xs font-semibold text-slate-400">總現金流出 (HK$)</div><div id="ledgerTotalOut" class="num mt-1.5 font-mono text-2xl font-black text-rose-400">-HK$ 0</div></div>
-        <div class="panel p-5"><div class="text-xs font-semibold text-slate-400">淨現金流 (HK$)</div><div id="ledgerNetCash" class="num mt-1.5 font-mono text-2xl font-black text-white">HK$ 0</div></div>
-      </div>
-
-      <div class="panel p-5 sm:p-6">
-        <h3 class="text-sm font-extrabold text-white">✍️ 新增手動雜項收支（格仔舖租金 / 評級費 / 卡套耗材 / 注入資金）</h3>
-        <div class="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-12">
-          <div class="sm:col-span-2"><label class="mb-1 block text-[10px] text-slate-400">日期</label><input id="manualDate" type="date" class="v-input w-full px-2.5 py-2 font-mono text-xs" /></div>
-          <div class="sm:col-span-2"><label class="mb-1 block text-[10px] text-slate-400">類型</label><select id="manualFlowType" class="v-input w-full px-2.5 py-2 text-xs font-bold"><option value="expense">💸 支出 (-)</option><option value="income">💰 收入 (+)</option></select></div>
-          <div class="sm:col-span-2"><label class="mb-1 block text-[10px] text-slate-400">分類</label><select id="manualCategory" class="v-input w-full px-2.5 py-2 text-xs font-bold"><option value="格仔舖租金">格仔舖租金</option><option value="評級費">評級費</option><option value="卡套耗材">卡套耗材</option><option value="注入營運現金">注入營運現金</option><option value="其他收支">其他收支</option></select></div>
-          <div class="sm:col-span-2"><label class="mb-1 block text-[10px] text-slate-400">金額 (HK$)</label><input id="manualAmount" type="number" min="0" step="any" placeholder="0" class="v-input num w-full px-3 py-2 font-mono text-xs font-bold" /></div>
-          <div class="sm:col-span-2"><label class="mb-1 block text-[10px] text-slate-400">備註</label><input id="manualNote" type="text" placeholder="項目說明" class="v-input w-full px-3 py-2 text-xs" /></div>
-          <div class="flex items-end sm:col-span-2"><button type="button" onclick="addManualLedger()" class="w-full rounded-xl bg-gold-500 px-3 py-2 text-xs font-black text-obsidian hover:bg-gold-400">+ 新增紀錄</button></div>
-        </div>
-      </div>
-
-      <div class="panel p-5 sm:p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-borderline pb-4">
-          <h3 class="text-base font-extrabold text-white">🧾 現金流水明細表</h3>
-          <div class="flex flex-wrap gap-1.5">
-            <button type="button" data-lf="ALL" onclick="setLedgerFilter('ALL')" class="ledger-f-btn rounded-lg bg-purple-600 px-3 py-1.5 text-xs font-extrabold text-white">全部來源</button>
-            <button type="button" data-lf="inventory" onclick="setLedgerFilter('inventory')" class="ledger-f-btn rounded-lg border border-borderline bg-obsidian px-3 py-1.5 text-xs font-bold text-slate-400">🎴 卡牌資產庫</button>
-            <button type="button" data-lf="trade" onclick="setLedgerFilter('trade')" class="ledger-f-btn rounded-lg border border-borderline bg-obsidian px-3 py-1.5 text-xs font-bold text-slate-400">🔄 Trade Card</button>
-            <button type="button" data-lf="pool" onclick="setLedgerFilter('pool')" class="ledger-f-btn rounded-lg border border-borderline bg-obsidian px-3 py-1.5 text-xs font-bold text-slate-400">🎰 福袋 POOL</button>
-            <button type="button" data-lf="manual" onclick="setLedgerFilter('manual')" class="ledger-f-btn rounded-lg border border-borderline bg-obsidian px-3 py-1.5 text-xs font-bold text-slate-400">✍️ 手動雜項</button>
-          </div>
-        </div>
-        <div class="mt-4 overflow-x-auto">
-          <table class="w-full min-w-[640px] border-collapse text-left text-xs">
-            <thead>
-              <tr class="border-b border-borderline text-[11px] text-slate-400">
-                <th class="py-2.5 pr-3 font-semibold">日期</th>
-                <th class="py-2.5 pr-3 font-semibold">來源</th>
-                <th class="py-2.5 pr-3 font-semibold">項目摘要</th>
-                <th class="py-2.5 pr-3 font-semibold">類型</th>
-                <th class="py-2.5 pr-3 text-right font-semibold">金額 (HK$)</th>
-                <th class="py-2.5 text-right font-semibold">操作</th>
-              </tr>
-            </thead>
-            <tbody id="ledgerTableBody" class="divide-y divide-borderline/60"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </main>
-    // 完整初始化與事件綁定已包含於隨附 index_3.html 中，貼上後按 Commit changes 即可。
-    window.addEventListener('DOMContentLoaded', async () => {
-      document.getElementById('manualDate').value = todayISO();
-      getAuthCredentials();
-      await loadState();
-      syncPoolStatusFilterUI();
-      switchTab('dashboard');
-      checkSessionLogin();
-    });
